@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ORACLE • 33</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&amp;family=Instrument+Sans:wght@400;500&amp;display=swap');
+
+    :root {
+      --gold: #c9a36b;
+      --deep: #0f0c1f;
+    }
+
+    body {
+      font-family: 'Instrument Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    .heading-serif {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-feature-settings: "tnum";
+    }
+
+    .mystical-bg {
+      background: radial-gradient(circle at 50% 20%, #1a1633 0%, #0f0c1f 45%, #0a0818 100%);
+    }
+
+    .starfield {
+      background-image: 
+        radial-gradient(1.5px 1.5px at 20px 30px, rgba(201, 163, 107, 0.25) 50%, transparent 100%),
+        radial-gradient(1px 1px at 80px 120px, rgba(255,255,255,0.2) 50%, transparent 100%),
+        radial-gradient(1px 1px at 160px 60px, rgba(255,255,255,0.15) 50%, transparent 100%),
+        radial-gradient(1.2px 1.2px at 240px 200px, rgba(201, 163, 107, 0.18) 50%, transparent 100%),
+        radial-gradient(1px 1px at 320px 90px, rgba(255,255,255,0.22) 50%, transparent 100%);
+      background-size: 380px 280px;
+      animation: twinkle 8s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.85; }
+      50% { opacity: 1; }
+    }
+
+    .oracle-card {
+      width: 270px;
+      height: 400px;
+      cursor: pointer;
+    }
+
+    .deck-card {
+      box-shadow: 0 20px 55px -12px rgb(0 0 0 / 0.55),
+                  0 8px 25px -8px rgb(0 0 0 / 0.45);
+      transition: transform 0.2s cubic-bezier(0.23, 1.0, 0.32, 1), 
+                  box-shadow 0.2s ease;
+    }
+
+    .deck-card:hover {
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: 0 28px 65px -10px rgb(0 0 0 / 0.6),
+                  0 12px 30px -8px rgb(0 0 0 / 0.5);
+    }
+
+    /* Make sure absolute children inside the static left deck are contained */
+    .deck-card {
+      position: relative;
+    }
+
+    /* Light elegant awaiting card for the right position (matches the clean "two cards" look) */
+    .right-back {
+      background: linear-gradient(165deg, #f8f4e9 0%, #f1e9d9 100%);
+      border: 1px solid #d4c8a8;
+      box-shadow: inset 0 0 0 1px #e8dcc4;
+    }
+    .right-back::before {
+      content: '';
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(201, 163, 107, 0.22);
+      border-radius: 10px;
+    }
+
+    /* Static deck back for left side (no absolute face positioning) */
+    .static-deck-back {
+      background: linear-gradient(145deg, #16132a 0%, #0f0c1f 100%);
+      border: 1px solid #2a2545;
+      border-radius: 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .static-deck-back::before {
+      content: '';
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(201, 163, 107, 0.25);
+      border-radius: 12px;
+    }
+
+    .oracle-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      box-shadow: 0 25px 70px -15px rgb(0 0 0 / 0.5),
+                  0 10px 30px -10px rgb(0 0 0 / 0.4);
+    }
+
+    .card-face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    /* Right card starts with the light back visible; front is hidden until revealed flat */
+    #oracle-card .card-front {
+      opacity: 0;
+      transition: opacity 0.35s ease;
+    }
+    #oracle-card.card-revealed .card-front {
+      opacity: 1;
+      transition: opacity 0.35s ease;
+    }
+
+    #oracle-card .right-back {
+      transition: opacity 0.35s ease;
+    }
+    #oracle-card.card-revealed .right-back {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .card-back {
+      background: linear-gradient(145deg, #16132a 0%, #0f0c1f 100%);
+      border: 1px solid #2a2545;
+    }
+
+    .card-back::before {
+      content: '';
+      position: absolute;
+      inset: 14px;
+      border: 1px solid rgba(201, 163, 107, 0.25);
+      border-radius: 12px;
+    }
+
+    .card-back::after {
+      content: '';
+      position: absolute;
+      inset: 26px;
+      background: 
+        radial-gradient(circle at 30% 30%, rgba(201,163,107,0.07) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(201,163,107,0.06) 0%, transparent 55%);
+      border-radius: 10px;
+    }
+
+    .card-front {
+      background: linear-gradient(165deg, #f8f4e9 0%, #f1e9d9 100%);
+      color: #2c2520;
+      border: 1px solid #d4c8a8;
+      box-shadow: inset 0 0 0 1px #e8dcc4;
+    }
+
+    .card-front::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: 
+        linear-gradient(to bottom, rgba(201,163,107,0.06) 0%, transparent 18%),
+        linear-gradient(to top, rgba(140, 110, 70, 0.035) 0%, transparent 22%);
+      pointer-events: none;
+    }
+
+    .gold-border {
+      position: absolute;
+      inset: 11px;
+      border: 1px solid #c9a36b;
+      border-radius: 12px;
+      opacity: 0.45;
+    }
+
+    .inner-border {
+      position: absolute;
+      inset: 19px;
+      border: 1px solid #b89a66;
+      border-radius: 8px;
+      opacity: 0.25;
+    }
+
+    .ornate-corner {
+      position: absolute;
+      width: 38px;
+      height: 38px;
+      border: 1px solid #c9a36b;
+      opacity: 0.35;
+    }
+
+    .ornate-corner.tl { top: 22px; left: 22px; border-right: none; border-bottom: none; border-top-left-radius: 4px; }
+    .ornate-corner.tr { top: 22px; right: 22px; border-left: none; border-bottom: none; border-top-right-radius: 4px; }
+    .ornate-corner.bl { bottom: 22px; left: 22px; border-right: none; border-top: none; border-bottom-left-radius: 4px; }
+    .ornate-corner.br { bottom: 22px; right: 22px; border-left: none; border-top: none; border-bottom-right-radius: 4px; }
+
+    .card-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      letter-spacing: -0.02em;
+    }
+
+    .symbol-circle {
+      width: 108px;
+      height: 108px;
+      background: radial-gradient(circle at 45% 35%, #f8f4e9, #e8dcc4 60%, #d9c9a3 100%);
+      box-shadow: 
+        inset 0 4px 12px rgba(255,255,255,0.9),
+        inset 0 -8px 18px rgba(140,110,70,0.2),
+        0 4px 14px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .symbol-circle::after {
+      content: '';
+      position: absolute;
+      inset: -1px;
+      border-radius: 9999px;
+      border: 1px solid #c9a36b;
+      opacity: 0.3;
+    }
+
+    .oracle-glow {
+      box-shadow: 0 0 0 1px rgba(201, 163, 107, 0.2),
+                  0 10px 50px -15px rgb(201 163 107 / 0.25);
+    }
+
+    /* The right card frame is always static in place on the right.
+       We crossfade the interior (#card-content) between awaiting state and full card. */
+
+    .interpretation {
+      animation: interpretationEnter 0.7s cubic-bezier(0.23, 1.0, 0.32, 1) both;
+    }
+
+    @keyframes interpretationEnter {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .message-text {
+      line-height: 1.55;
+    }
+
+    .sacred {
+      filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.15));
+    }
+
+    .deck-label {
+      font-size: 10px;
+      letter-spacing: 3px;
+      font-weight: 500;
+    }
+
+    .draw-button {
+      transition: all 0.2s cubic-bezier(0.23, 1.0, 0.32, 1);
+    }
+
+    .draw-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 10px 25px -8px rgb(201 163 107 / 0.35);
+    }
+
+    .subtle-text {
+      color: #6b5f52;
+    }
+  </style>
+</head>
+<body class="mystical-bg starfield min-h-screen text-white overflow-x-hidden">
+  <!-- Header -->
+  <div class="pt-10 pb-6 px-6">
+    <div class="max-w-[720px] mx-auto flex items-center justify-between">
+      <div>
+        <div class="flex items-center gap-x-3">
+          <div class="w-7 h-7 rounded-full border border-[#c9a36b] flex items-center justify-center">
+            <i class="fa-solid fa-infinity text-[#c9a36b] text-sm"></i>
+          </div>
+          <div>
+            <span class="text-3xl font-semibold tracking-tighter heading-serif text-[#e8d9b8]">ORACLE</span>
+            <span class="text-[#c9a36b] text-sm font-medium tracking-[3px] ml-1">33</span>
+          </div>
+        </div>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] text-[#c9a36b]/70 tracking-[2px]">DAILY GUIDANCE</div>
+        <div id="today-date" class="text-xs text-[#a89d86] font-light"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-[720px] mx-auto px-6 pb-12">
+    <!-- Intro -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl tracking-tighter heading-serif text-[#e8d9b8] leading-none mb-2">One card.<br>One message.</h1>
+      <p class="text-[#a89d86] text-[15px]">Draw from the deck. Receive your guidance.</p>
+    </div>
+
+    <!-- Two-Card Layout: Deck (left) + Drawn Card (right) -->
+    <div class="flex justify-center mb-2">
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-7 md:gap-8">
+        
+        <!-- LEFT: Face-down Deck Card -->
+        <div class="text-center">
+          <div class="text-[10px] tracking-[2.5px] text-[#c9a36b]/70 mb-2">THE DECK</div>
+          
+          <div id="deck-card" onclick="drawCard()" 
+               class="oracle-card deck-card">
+            <!-- Static ornate deck back (left side) -->
+            <div class="static-deck-back flex flex-col items-center justify-center p-7 w-full h-full">
+              <div class="absolute inset-0 flex items-center justify-center">
+                <div class="relative w-36 h-36 flex items-center justify-center">
+                  <div class="absolute w-36 h-36 rounded-full border border-[#c9a36b]/30"></div>
+                  <div class="absolute w-[110px] h-[110px] rounded-full border border-[#c9a36b]/25"></div>
+                  <div class="absolute w-[78px] h-[78px] rounded-full border border-[#c9a36b]/20"></div>
+                  
+                  <div class="relative w-14 h-14">
+                    <svg width="56" height="56" viewBox="0 0 64 64" class="text-[#c9a36b]/70">
+                      <circle cx="32" cy="32" r="5" fill="currentColor" opacity="0.6"/>
+                      <g fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.55">
+                        <path d="M32 14 Q40 24 32 32 Q24 24 32 14"/>
+                        <path d="M32 14 Q40 24 32 32 Q24 24 32 14" transform="rotate(60 32 32)"/>
+                        <path d="M32 14 Q40 24 32 32 Q24 24 32 14" transform="rotate(120 32 32)"/>
+                        <path d="M32 14 Q40 24 32 32 Q24 24 32 14" transform="rotate(180 32 32)"/>
+                        <path d="M32 14 Q40 24 32 32 Q24 24 32 14" transform="rotate(240 32 32)"/>
+                        <path d="M32 14 Q40 24 32 32 Q24 24 32 14" transform="rotate(300 32 32)"/>
+                      </g>
+                      <circle cx="32" cy="32" r="9" fill="none" stroke="currentColor" stroke-width="1" opacity="0.4"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+
+              <div class="relative z-10 text-center">
+                <div class="deck-label text-[#c9a36b] tracking-[4px] mb-0.5">THE DECK</div>
+                <div class="text-[34px] leading-none font-semibold tracking-[-1.2px] heading-serif text-[#e8d9b8]">33</div>
+                <div class="text-[9px] text-[#c9a36b]/55 tracking-[2px] mt-px">ORACLE CARDS</div>
+              </div>
+
+              <div class="absolute bottom-6 text-[9px] text-[#c9a36b]/45 tracking-[1.5px]">TAP TO DRAW</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: The drawn / revealed card position -->
+        <div class="text-center">
+          <div class="text-[10px] tracking-[2.5px] text-[#c9a36b]/70 mb-2">YOUR ORACLE</div>
+          
+          <div class="relative">
+            <!-- Ambient glow behind the right card -->
+            <div id="card-glow" 
+                 class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[260px] h-[260px] rounded-full bg-[#c9a36b] opacity-0 blur-[85px] transition-all duration-1000 pointer-events-none"></div>
+
+            <!-- Right card (static frame on the right — content inside changes with pure opacity crossfade, no flip or motion on the card itself) -->
+            <div id="oracle-card" class="oracle-card" onclick="handleDrawnCardClick()">
+              <div id="card-content" class="w-full h-full">
+                <!-- Initial awaiting state (light minimal card) -->
+                <div class="right-back flex flex-col items-center justify-center p-8 relative w-full h-full">
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <div class="relative">
+                      <!-- Soft concentric rings in gold on cream -->
+                      <div class="w-20 h-20 rounded-full border border-[#c9a36b]/35"></div>
+                      <div class="absolute inset-[7px] rounded-full border border-[#c9a36b]/22"></div>
+                      <div class="absolute inset-[14px] rounded-full border border-[#c9a36b]/12"></div>
+                      <!-- Small central mark -->
+                      <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="w-2 h-2 rounded-full bg-[#c9a36b]/50"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="relative z-10 text-center">
+                    <div class="text-[9px] tracking-[3px] text-[#b89a66]/60">—</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Interpretation / Message - Clean centered caption under the two-card dash -->
+    <div id="interpretation" class="hidden mt-4 max-w-[580px] mx-auto text-center">
+      <div class="pt-2">
+        <!-- Very subtle centered header line -->
+        <div class="flex items-center justify-center gap-x-3 mb-2">
+          <div class="h-px w-6 bg-gradient-to-r from-transparent via-[#c9a36b]/45"></div>
+          <div class="text-[9px] tracking-[2.8px] text-[#c9a36b]/60 font-medium">TODAY'S MESSAGE</div>
+          <div class="h-px w-6 bg-gradient-to-l from-transparent via-[#c9a36b]/45"></div>
+        </div>
+
+        <!-- The main daily guidance text -->
+        <div id="daily-message" 
+             class="message-text text-[#d8d0b8] text-[14.5px] leading-relaxed max-w-[48ch] mx-auto">
+        </div>
+
+        <!-- Essence line, integrated lightly -->
+        <div class="mt-3 flex items-center justify-center gap-x-2 text-[12px] text-[#a89d86]">
+          <i class="fa-solid fa-feather text-[#c9a36b] text-xs"></i>
+          <span id="essence"></span>
+        </div>
+      </div>
+
+      <!-- Minimal buttons – low visual weight so focus stays on the two cards -->
+      <div class="flex items-center justify-center gap-x-4 mt-4 text-[10px] tracking-wider">
+        <button onclick="drawCard(true)"
+                class="text-[#c9a36b] hover:text-[#d4af77] flex items-center gap-x-1.5 transition-colors active:opacity-70">
+          <i class="fa-solid fa-sync-alt"></i>
+          <span>DRAW ANOTHER</span>
+        </button>
+        <span class="text-[#c9a36b]/25">·</span>
+        <button onclick="copyMessage()"
+                class="text-[#c9a36b] hover:text-[#d4af77] flex items-center gap-x-1.5 transition-colors active:opacity-70">
+          <i class="fa-solid fa-copy"></i>
+          <span>SAVE MESSAGE</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center pb-9">
+    <div class="text-[10px] text-[#5c5344] tracking-widest">BREATHE • RECEIVE • TRUST</div>
+  </div>
+
+  <script>
+    // Tailwind script configuration
+    function initTailwind() {
+      document.documentElement.style.setProperty('--accent', '#c9a36b');
+    }
+
+    // Set today's date
+    function setTodayDate() {
+      const el = document.getElementById('today-date');
+      const date = new Date();
+      const options = { month: 'long', day: 'numeric' };
+      el.textContent = date.toLocaleDateString('en-US', options).toUpperCase();
+    }
+
+    // The 33 Oracle Cards
+    const deck = [
+      {
+        id: 1,
+        name: "THE DAWN",
+        keyword: "Renewal",
+        symbol: "🌅",
+        svg: `<svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="34" cy="38" r="11" fill="#c9a36b" opacity="0.85"/>
+          <path d="M22 38 L12 38" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M56 38 L46 38" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M27 27 L19 19" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M49 27 L57 19" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M34 20 L34 9" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M20 49 Q34 58 48 49" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        </svg>`,
+        essence: "The first light after darkness. A clean slate is offered.",
+        daily: "Today begins with quiet promise. Something long dormant is ready to stir. Move gently but deliberately — the smallest step you take this morning carries more weight than you know."
+      },
+      {
+        id: 2,
+        name: "THE MIRROR",
+        keyword: "Reflection",
+        symbol: "🪞",
+        svg: `<svg width="62" height="68" viewBox="0 0 62 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="31" cy="23" rx="19" ry="13" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M22 35 L22 55 Q31 62 40 55 L40 35" stroke="#c9a36b" stroke-width="3"/>
+          <circle cx="31" cy="23" r="6" fill="#c9a36b" opacity="0.4"/>
+        </svg>`,
+        essence: "You are being shown to yourself without judgment.",
+        daily: "The day will reflect you back. Notice what irritates or delights you — these are clues. When you meet your own gaze honestly, the path forward becomes obvious."
+      },
+      {
+        id: 3,
+        name: "THE RIVER",
+        keyword: "Flow",
+        symbol: "🌊",
+        svg: `<svg width="72" height="52" viewBox="0 0 72 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 26 Q18 14 34 26 Q50 38 68 26" stroke="#c9a36b" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M4 38 Q18 26 34 38 Q50 50 68 38" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+          <path d="M4 14 Q18 2 34 14 Q50 26 68 14" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+        </svg>`,
+        essence: "Surrender is not giving up. It is moving with what already wants to move.",
+        daily: "Let the current carry you today. Resistance will only tire you. Trust that the river already knows the way — your only job is to stay afloat and steer lightly when needed."
+      },
+      {
+        id: 4,
+        name: "THE FLAME",
+        keyword: "Courage",
+        symbol: "🔥",
+        svg: `<svg width="58" height="72" viewBox="0 0 58 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M29 6 Q16 26 22 42 Q29 56 29 66" stroke="#c9a36b" stroke-width="4" stroke-linecap="round"/>
+          <path d="M29 6 Q42 26 36 42 Q29 56 29 66" stroke="#c9a36b" stroke-width="4" stroke-linecap="round"/>
+          <path d="M23 30 Q29 38 35 30" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.5"/>
+        </svg>`,
+        essence: "Your inner fire is not too much. It is exactly enough.",
+        daily: "A moment will arrive today that asks you to stand in your full power. Do not shrink. Speak the truth you have been rehearsing in silence. The flame protects those who carry it openly."
+      },
+      {
+        id: 5,
+        name: "THE GARDEN",
+        keyword: "Nurture",
+        symbol: "🌱",
+        svg: `<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 52 L32 24" stroke="#c9a36b" stroke-width="3"/>
+          <circle cx="32" cy="18" r="7" fill="#c9a36b" opacity="0.7"/>
+          <path d="M20 38 Q32 30 44 38" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M17 46 Q32 38 47 46" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="32" cy="54" r="4" fill="#c9a36b" opacity="0.3"/>
+        </svg>`,
+        essence: "What you tend to with care will grow beyond expectation.",
+        daily: "Tend to one small thing today with full presence — a conversation, a plant, your own body, a half-finished idea. The garden does not rush. Neither should you."
+      },
+      {
+        id: 6,
+        name: "THE KEY",
+        keyword: "Opportunity",
+        symbol: "🗝️",
+        svg: `<svg width="44" height="70" viewBox="0 0 44 70" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="14" cy="14" r="10" stroke="#c9a36b" stroke-width="3.5"/>
+          <path d="M22 20 L40 38" stroke="#c9a36b" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M33 33 L39 39" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="4" fill="#c9a36b"/>
+        </svg>`,
+        essence: "The door was never locked. You simply needed the right key.",
+        daily: "Watch for the unexpected opening. It may arrive disguised as a coincidence or a casual invitation. Say yes before your mind finds reasons to hesitate."
+      },
+      {
+        id: 7,
+        name: "THE VEIL",
+        keyword: "Intuition",
+        symbol: "👁️",
+        svg: `<svg width="66" height="46" viewBox="0 0 66 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="33" cy="23" rx="28" ry="16" stroke="#c9a36b" stroke-width="3"/>
+          <circle cx="33" cy="23" r="7" fill="#c9a36b" opacity="0.85"/>
+          <path d="M12 23 Q33 10 54 23" stroke="#c9a36b" stroke-width="1.5" opacity="0.4"/>
+        </svg>`,
+        essence: "You already know. You are simply learning to trust what you know.",
+        daily: "Your body will tell you the truth today before your mind catches up. Pay attention to the subtle tightening or the soft expansion in your chest. That is your compass."
+      },
+      {
+        id: 8,
+        name: "THE ANCHOR",
+        keyword: "Grounding",
+        symbol: "⚓",
+        svg: `<svg width="52" height="68" viewBox="0 0 52 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M26 6 L26 42" stroke="#c9a36b" stroke-width="4" stroke-linecap="round"/>
+          <circle cx="26" cy="12" r="6" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M8 46 Q26 56 44 46" stroke="#c9a36b" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M26 42 L26 58" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+        </svg>`,
+        essence: "Stillness is not the absence of movement. It is the presence of center.",
+        daily: "When the day feels chaotic, return to your body. Feel your feet. Take three slow breaths. The anchor does not stop the storm — it keeps you steady inside it."
+      },
+      {
+        id: 9,
+        name: "THE WINGS",
+        keyword: "Perspective",
+        symbol: "🕊️",
+        svg: `<svg width="74" height="52" viewBox="0 0 74 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 30 Q20 14 37 26" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M66 30 Q54 14 37 26" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M15 36 Q26 24 37 32" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <path d="M59 36 Q48 24 37 32" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <circle cx="37" cy="26" r="3.5" fill="#c9a36b"/>
+        </svg>`,
+        essence: "Rise high enough and the problem becomes a landscape.",
+        daily: "Something that felt overwhelming will shrink today when you change your altitude. Take the higher view. The details that matter will remain; the noise will fall away."
+      },
+      {
+        id: 10,
+        name: "THE LANTERN",
+        keyword: "Hope",
+        symbol: "🏮",
+        svg: `<svg width="52" height="68" viewBox="0 0 52 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 14 L34 14 L34 22 L18 22 Z" fill="#c9a36b" opacity="0.3"/>
+          <rect x="20" y="22" width="12" height="26" rx="1" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M26 48 L26 60" stroke="#c9a36b" stroke-width="3"/>
+          <circle cx="26" cy="30" r="4" fill="#c9a36b"/>
+        </svg>`,
+        essence: "Even the smallest light changes the darkness completely.",
+        daily: "You will be the light for someone today, or someone will be the light for you. Either way, hope is not abstract — it arrives through a gesture, a word, a presence."
+      },
+      {
+        id: 11,
+        name: "THE SEED",
+        keyword: "Potential",
+        symbol: "🌰",
+        svg: `<svg width="56" height="62" viewBox="0 0 56 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="28" cy="38" rx="17" ry="19" fill="#c9a36b" opacity="0.25"/>
+          <ellipse cx="28" cy="36" rx="11" ry="13" fill="#c9a36b" opacity="0.65"/>
+          <path d="M28 10 L28 24" stroke="#c9a36b" stroke-width="2.5"/>
+          <path d="M20 16 Q28 22 36 16" stroke="#c9a36b" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        essence: "Everything magnificent begins invisible and small.",
+        daily: "An idea, a feeling, or a connection planted today will matter more than you can currently imagine. Protect it. Water it. Do not demand it show fruit immediately."
+      },
+      {
+        id: 12,
+        name: "THE BRIDGE",
+        keyword: "Connection",
+        symbol: "🌉",
+        svg: `<svg width="72" height="46" viewBox="0 0 72 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 36 Q36 10 66 36" stroke="#c9a36b" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M16 36 L16 22" stroke="#c9a36b" stroke-width="2.5"/>
+          <path d="M36 36 L36 14" stroke="#c9a36b" stroke-width="2.5"/>
+          <path d="M56 36 L56 22" stroke="#c9a36b" stroke-width="2.5"/>
+          <path d="M6 36 L66 36" stroke="#c9a36b" stroke-width="4"/>
+        </svg>`,
+        essence: "You are never as alone as you believe.",
+        daily: "A conversation, a message, or a shared glance will remind you that you belong to something larger. Reach first. The bridge is built from both sides at once."
+      },
+      {
+        id: 13,
+        name: "THE STORM",
+        keyword: "Release",
+        symbol: "⛈️",
+        svg: `<svg width="66" height="58" viewBox="0 0 66 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 22 Q22 8 36 18 Q48 6 54 22" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M20 34 L28 48 L34 38 L42 52" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <circle cx="33" cy="26" r="13" stroke="#c9a36b" stroke-width="2" opacity="0.4"/>
+        </svg>`,
+        essence: "What passes through you cannot stay stuck inside you.",
+        daily: "Emotions may rise suddenly and strongly. Let them. The storm clears the air. After it moves through, the world will feel washed and newly possible."
+      },
+      {
+        id: 14,
+        name: "THE STAR",
+        keyword: "Inspiration",
+        symbol: "⭐",
+        svg: `<svg width="62" height="62" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M31 6 L36 24 L55 26 L40 38 L44 56 L31 46 L18 56 L22 38 L7 26 L26 24 Z" fill="#c9a36b" opacity="0.85"/>
+          <circle cx="31" cy="31" r="5" fill="#f8f4e9"/>
+        </svg>`,
+        essence: "You are being guided by something older and wiser than your plans.",
+        daily: "A flash of insight or a sudden sense of direction will arrive when you least expect it. Follow it even if it makes no logical sense yet. Stars only appear in darkness."
+      },
+      {
+        id: 15,
+        name: "THE ROOT",
+        keyword: "Strength",
+        symbol: "🌳",
+        svg: `<svg width="58" height="68" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M29 12 L29 42" stroke="#c9a36b" stroke-width="4"/>
+          <path d="M17 48 Q29 40 41 48" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M12 58 Q29 48 46 58" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M29 12 Q15 20 17 32" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M29 12 Q43 20 41 32" stroke="#c9a36b" stroke-width="3"/>
+        </svg>`,
+        essence: "You are more held than you can feel right now.",
+        daily: "Your foundation is deeper and stronger than the winds above. Stand in that knowing. What you have already survived has made you quietly unshakable."
+      },
+      {
+        id: 16,
+        name: "THE BLOOM",
+        keyword: "Expression",
+        symbol: "🌸",
+        svg: `<svg width="66" height="62" viewBox="0 0 66 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="33" cy="30" r="7" fill="#c9a36b" opacity="0.5"/>
+          <path d="M33 12 Q22 20 25 33" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M33 12 Q44 20 41 33" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M20 26 Q30 34 22 46" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M46 26 Q36 34 44 46" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <circle cx="33" cy="30" r="3" fill="#c9a36b"/>
+        </svg>`,
+        essence: "Beauty wants to move through you. Let it.",
+        daily: "Your natural expression — whether in words, dress, work, or presence — will touch someone today. Do not edit yourself for acceptability. The world needs your particular bloom."
+      },
+      {
+        id: 17,
+        name: "THE PATH",
+        keyword: "Direction",
+        symbol: "🛤️",
+        svg: `<svg width="68" height="46" viewBox="0 0 68 46" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 38 Q22 24 34 32 Q48 20 60 34" stroke="#c9a36b" stroke-width="3.5" stroke-linecap="round"/>
+          <path d="M12 38 L8 34" stroke="#c9a36b" stroke-width="2"/>
+          <path d="M56 34 L60 30" stroke="#c9a36b" stroke-width="2"/>
+          <circle cx="34" cy="31" r="3" fill="#c9a36b"/>
+        </svg>`,
+        essence: "The way is revealed one step at a time. You do not need the whole map.",
+        daily: "You do not have to see the destination. You only need to know the next right action. Take it. The path will keep appearing as you walk."
+      },
+      {
+        id: 18,
+        name: "THE MOON",
+        keyword: "Cycles",
+        symbol: "🌙",
+        svg: `<svg width="52" height="64" viewBox="0 0 52 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M36 12 Q20 20 24 42 Q32 54 38 46" fill="#c9a36b" opacity="0.75"/>
+          <path d="M36 12 Q20 20 24 42 Q32 54 38 46" stroke="#c9a36b" stroke-width="2.5"/>
+          <circle cx="26" cy="34" r="4" fill="#f8f4e9"/>
+        </svg>`,
+        essence: "Everything returns. Nothing is wasted.",
+        daily: "A feeling or situation that once passed through your life may echo today in a gentler form. This is not regression — it is integration. You are meeting it from a new place."
+      },
+      {
+        id: 19,
+        name: "THE SUN",
+        keyword: "Vitality",
+        symbol: "☀️",
+        svg: `<svg width="68" height="68" viewBox="0 0 68 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="34" cy="34" r="11" fill="#c9a36b"/>
+          <g stroke="#c9a36b" stroke-width="3" stroke-linecap="round">
+            <path d="M34 6 L34 15"/>
+            <path d="M34 53 L34 62"/>
+            <path d="M6 34 L15 34"/>
+            <path d="M53 34 L62 34"/>
+            <path d="M15 15 L21 21"/>
+            <path d="M47 47 L53 53"/>
+            <path d="M15 53 L21 47"/>
+            <path d="M47 21 L53 15"/>
+          </g>
+        </svg>`,
+        essence: "Your aliveness is medicine — for yourself and others.",
+        daily: "Joy is not frivolous today. It is a form of power. Let yourself be warmed by simple pleasures. Your brightness lifts the entire field around you."
+      },
+      {
+        id: 20,
+        name: "THE WELL",
+        keyword: "Wisdom",
+        symbol: "🪨",
+        svg: `<svg width="58" height="64" viewBox="0 0 58 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <ellipse cx="29" cy="42" rx="22" ry="10" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M12 42 L12 22 Q29 12 46 22 L46 42" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M20 26 Q29 32 38 26" stroke="#c9a36b" stroke-width="2"/>
+          <circle cx="29" cy="34" r="4" fill="#c9a36b" opacity="0.5"/>
+        </svg>`,
+        essence: "The answers you seek are already inside you, waiting to be drawn up.",
+        daily: "When you feel lost, stop reaching outward. Sit in stillness for a few minutes. The well is deep and the water is clear. What rises to the surface will surprise you."
+      },
+      {
+        id: 21,
+        name: "THE FEATHER",
+        keyword: "Ease",
+        symbol: "🪶",
+        svg: `<svg width="62" height="58" viewBox="0 0 62 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8 30 Q22 12 54 24" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M14 36 Q26 22 52 30" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+          <path d="M20 42 Q28 32 46 38" stroke="#c9a36b" stroke-width="1.5" stroke-linecap="round" opacity="0.4"/>
+          <circle cx="8" cy="30" r="3" fill="#c9a36b"/>
+        </svg>`,
+        essence: "Grace is available when you stop gripping so tightly.",
+        daily: "You have been carrying something heavier than necessary. Today, experiment with releasing even 10% of the effort. Watch how the day reorganizes itself around a lighter you."
+      },
+      {
+        id: 22,
+        name: "THE LABYRINTH",
+        keyword: "Trust",
+        symbol: "🌀",
+        svg: `<svg width="58" height="58" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M29 6 Q48 10 48 29 Q48 48 29 52 Q10 48 10 29 Q10 18 18 12" stroke="#c9a36b" stroke-width="3" fill="none"/>
+          <circle cx="29" cy="29" r="6" fill="#c9a36b" opacity="0.4"/>
+          <path d="M29 23 L29 35" stroke="#c9a36b" stroke-width="2"/>
+        </svg>`,
+        essence: "You are exactly where you need to be, even when it feels like you are lost.",
+        daily: "The day may feel circuitous. Do not mistake turns for wrong turns. The labyrinth always leads to the center. Keep walking with curiosity rather than urgency."
+      },
+      {
+        id: 23,
+        name: "THE CHALICE",
+        keyword: "Receiving",
+        symbol: "🏆",
+        svg: `<svg width="48" height="68" viewBox="0 0 48 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 14 Q24 26 38 14" stroke="#c9a36b" stroke-width="3" fill="none"/>
+          <path d="M14 22 L14 44 Q24 52 34 44 L34 22" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M24 52 L24 62" stroke="#c9a36b" stroke-width="3"/>
+          <rect x="16" y="60" width="16" height="4" rx="1" fill="#c9a36b" opacity="0.5"/>
+        </svg>`,
+        essence: "You are allowed to receive without having earned it first.",
+        daily: "Gifts will be offered today — compliments, help, beauty, rest. Your work is simply to let them in. Notice the reflex to deflect and choose openness instead."
+      },
+      {
+        id: 24,
+        name: "THE SWORD",
+        keyword: "Truth",
+        symbol: "⚔️",
+        svg: `<svg width="42" height="72" viewBox="0 0 42 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 6 L21 48" stroke="#c9a36b" stroke-width="4"/>
+          <path d="M13 18 L21 10 L29 18" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M21 48 L21 64" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M11 64 L31 64" stroke="#c9a36b" stroke-width="3.5"/>
+        </svg>`,
+        essence: "The truth does not always feel kind, but it is always kind in the end.",
+        daily: "A clear word or decision is required. Speak it cleanly and without apology. The sword cuts through confusion — and sometimes the only confusion left is your own hesitation."
+      },
+      {
+        id: 25,
+        name: "THE SHIELD",
+        keyword: "Boundaries",
+        symbol: "🛡️",
+        svg: `<svg width="52" height="66" viewBox="0 0 52 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M26 6 L46 16 L46 36 Q46 52 26 60 Q6 52 6 36 L6 16 Z" stroke="#c9a36b" stroke-width="3" fill="none"/>
+          <path d="M18 24 L26 32 L34 24" stroke="#c9a36b" stroke-width="2.5"/>
+          <circle cx="26" cy="38" r="5" fill="#c9a36b" opacity="0.3"/>
+        </svg>`,
+        essence: "Saying no is a sacred act of self-respect.",
+        daily: "Protect your energy today as if it were the most precious resource you have — because it is. A clear boundary is not rejection of others. It is devotion to what you are here to do."
+      },
+      {
+        id: 26,
+        name: "THE HEART",
+        keyword: "Compassion",
+        symbol: "❤️",
+        svg: `<svg width="64" height="58" viewBox="0 0 64 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M32 52 L10 26 Q10 12 22 12 Q32 20 32 20 Q32 20 42 12 Q54 12 54 26 Z" fill="#c9a36b" opacity="0.75"/>
+          <path d="M32 52 L10 26 Q10 12 22 12 Q32 20 32 20 Q32 20 42 12 Q54 12 54 26 Z" stroke="#c9a36b" stroke-width="2"/>
+        </svg>`,
+        essence: "The heart knows how to hold what the mind cannot yet understand.",
+        daily: "Someone (possibly you) will need softness today. Offer it freely. Compassion is not weakness — it is the strongest force that moves between people."
+      },
+      {
+        id: 27,
+        name: "THE HOURGLASS",
+        keyword: "Timing",
+        symbol: "⏳",
+        svg: `<svg width="48" height="68" viewBox="0 0 48 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 10 L36 10 L36 30 L12 30 Z" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M12 38 L36 38 L36 58 L12 58 Z" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M24 30 L24 38" stroke="#c9a36b" stroke-width="2.5"/>
+          <circle cx="24" cy="20" r="3" fill="#c9a36b" opacity="0.6"/>
+          <circle cx="24" cy="48" r="3" fill="#c9a36b" opacity="0.6"/>
+        </svg>`,
+        essence: "What is meant for you will not miss you.",
+        daily: "Rushing will not make the right things arrive sooner. Trust the timing. What is delayed is often being perfected. What is early would have been too soon."
+      },
+      {
+        id: 28,
+        name: "THE MOUNTAIN",
+        keyword: "Resilience",
+        symbol: "🏔️",
+        svg: `<svg width="68" height="54" viewBox="0 0 68 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 48 L22 16 L34 34 L46 8 L62 48 Z" stroke="#c9a36b" stroke-width="3" fill="none"/>
+          <path d="M34 34 L34 48" stroke="#c9a36b" stroke-width="2"/>
+          <path d="M22 48 L22 38" stroke="#c9a36b" stroke-width="1.5" opacity="0.5"/>
+        </svg>`,
+        essence: "You have already climbed harder mountains than this one.",
+        daily: "A challenge will present itself. You possess everything required. The mountain does not care how you feel about it — it only asks that you keep placing one foot in front of the other."
+      },
+      {
+        id: 29,
+        name: "THE OCEAN",
+        keyword: "Depth",
+        symbol: "🌊",
+        svg: `<svg width="68" height="52" viewBox="0 0 68 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M4 20 Q14 30 24 20 Q34 10 44 20 Q54 30 64 20" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M4 32 Q14 42 24 32 Q34 22 44 32 Q54 42 64 32" stroke="#c9a36b" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+          <path d="M4 44 Q14 52 24 44 Q34 36 44 44 Q54 52 64 44" stroke="#c9a36b" stroke-width="2" stroke-linecap="round" opacity="0.35"/>
+        </svg>`,
+        essence: "You are both the wave and the vastness that holds it.",
+        daily: "Feelings will move like tides. Some will be gentle. Some will feel enormous. All of them are you. There is no need to become smaller to fit inside them."
+      },
+      {
+        id: 30,
+        name: "THE OAK",
+        keyword: "Legacy",
+        symbol: "🌳",
+        svg: `<svg width="58" height="66" viewBox="0 0 58 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M29 14 Q12 24 18 38 Q29 32 40 38 Q46 24 29 14" stroke="#c9a36b" stroke-width="3"/>
+          <path d="M29 38 L29 58" stroke="#c9a36b" stroke-width="4"/>
+          <path d="M18 52 Q29 46 40 52" stroke="#c9a36b" stroke-width="2"/>
+          <circle cx="29" cy="24" r="4" fill="#c9a36b" opacity="0.4"/>
+        </svg>`,
+        essence: "You are part of something that began long before you and will continue long after.",
+        daily: "The choices you make today plant seeds for people you may never meet. Act from that awareness. Your life is both fleeting and profoundly consequential."
+      },
+      {
+        id: 31,
+        name: "THE WIND",
+        keyword: "Change",
+        symbol: "💨",
+        svg: `<svg width="64" height="48" viewBox="0 0 64 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 16 Q20 12 34 18" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M10 28 Q26 22 42 28" stroke="#c9a36b" stroke-width="3" stroke-linecap="round"/>
+          <path d="M14 40 Q28 34 48 38" stroke="#c9a36b" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>`,
+        essence: "What is leaving is making room for what wants to arrive.",
+        daily: "Something is shifting — a plan, a relationship, an identity, a season. Do not clutch. The wind is not your enemy. It is the force that carries new life to new places."
+      },
+      {
+        id: 32,
+        name: "THE CRYSTAL",
+        keyword: "Clarity",
+        symbol: "💎",
+        svg: `<svg width="58" height="64" viewBox="0 0 58 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M29 6 L48 22 L42 52 L16 52 L10 22 Z" stroke="#c9a36b" stroke-width="3" fill="none"/>
+          <path d="M29 6 L29 52" stroke="#c9a36b" stroke-width="2"/>
+          <path d="M16 22 L42 22" stroke="#c9a36b" stroke-width="1.5" opacity="0.5"/>
+          <path d="M20 38 L38 38" stroke="#c9a36b" stroke-width="1.5" opacity="0.5"/>
+        </svg>`,
+        essence: "When the mind grows quiet, truth becomes simple.",
+        daily: "A fog will lift. You will suddenly see what has been true all along. Write it down. Speak it aloud. The crystal remembers what the storm tried to obscure."
+      },
+      {
+        id: 33,
+        name: "THE PHOENIX",
+        keyword: "Rebirth",
+        symbol: "🔥",
+        svg: `<svg width="62" height="66" viewBox="0 0 62 66" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M31 14 Q18 26 24 40 Q31 52 31 60" stroke="#c9a36b" stroke-width="3.5"/>
+          <path d="M31 14 Q44 26 38 40 Q31 52 31 60" stroke="#c9a36b" stroke-width="3.5"/>
+          <path d="M20 32 Q31 40 42 32" stroke="#c9a36b" stroke-width="2"/>
+          <path d="M31 14 L31 6" stroke="#c9a36b" stroke-width="2"/>
+          <circle cx="31" cy="22" r="4" fill="#c9a36b" opacity="0.6"/>
+        </svg>`,
+        essence: "You have died and risen before. You will do it again.",
+        daily: "A chapter is ending. It may feel like loss, but it is actually preparation. The fire is not here to destroy you — it is here to free you. What rises from these ashes will be more you than you have ever been."
+      }
+    ];
+
+    // Get a card (optionally seeded by date for "today's card")
+    function getCard(useDailySeed = false) {
+      if (useDailySeed) {
+        const today = new Date();
+        const seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+        const index = seed % deck.length;
+        return deck[index];
+      }
+      // Pure random
+      return deck[Math.floor(Math.random() * deck.length)];
+    }
+
+    // Populate the content of the right card (replaces whatever is inside #card-content)
+    function populateCardFront(card) {
+      const content = document.getElementById('card-content');
+      
+      content.innerHTML = `
+        <div class="card-front flex flex-col px-6 py-6 text-[#2c2520] w-full h-full">
+          <div class="relative flex flex-col h-full">
+            <!-- Top label -->
+            <div class="flex justify-between items-center px-1">
+              <div class="text-[9px] tracking-[3px] text-[#b89a66] font-medium">ORACLE</div>
+              <div class="text-[9px] text-[#b89a66] font-mono">${String(card.id).padStart(2, '0')} / 33</div>
+            </div>
+
+            <!-- Symbol / Illustration -->
+            <div class="flex justify-center mt-3 mb-1">
+              <div class="symbol-circle sacred">
+                ${card.svg}
+              </div>
+            </div>
+
+            <!-- Name -->
+            <div class="text-center mt-0.5 mb-px">
+              <div class="card-title text-[22px] leading-[1.05] tracking-[-0.4px] font-semibold text-[#2c2520]">
+                ${card.name}
+              </div>
+              <div class="text-[#b89a66] text-[10px] tracking-[2px] font-medium mt-0.5">
+                ${card.keyword.toUpperCase()}
+              </div>
+            </div>
+
+            <!-- Divider -->
+            <div class="my-2 flex justify-center">
+              <div class="w-6 h-px bg-gradient-to-r from-transparent via-[#c9a36b]/70 to-transparent"></div>
+            </div>
+
+            <!-- Essence -->
+            <div class="text-center px-3">
+              <p class="text-xs italic text-[#5c5344] leading-snug">
+                “${card.essence}”
+              </p>
+            </div>
+
+            <div class="flex-1"></div>
+
+            <!-- Bottom subtle cue -->
+            <div class="text-center">
+              <div class="inline-flex items-center gap-x-1 text-[9px] text-[#b89a66]/70">
+                <i class="fa-solid fa-circle text-[3.5px]"></i>
+                <span class="tracking-wider">FOR YOUR DAY</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Main draw function
+    let currentCard = null;
+    let hasDrawn = false;
+
+    function drawCard(forceNew = false) {
+      const cardEl = document.getElementById('oracle-card');
+      const interpretation = document.getElementById('interpretation');
+      const glow = document.getElementById('card-glow');
+
+      // Pick card
+      const isFirstDraw = !hasDrawn && !forceNew;
+      currentCard = getCard(isFirstDraw); // First draw is "daily" seeded
+
+      // Show glow behind the right card
+      glow.style.opacity = '0.13';
+      setTimeout(() => {
+        glow.style.opacity = '0.08';
+      }, 900);
+
+      const cardContent = document.getElementById('card-content');
+
+      if (isFirstDraw || !cardEl.classList.contains('card-revealed')) {
+        // === FIRST REVEAL: The right card's outer frame and position on the right is 100% static.
+        // We crossfade the *entire interior content* from the simple awaiting rings to the full card.
+        // No rotation, no scale on the card, no "flip down from the centre".
+        cardContent.style.transition = 'opacity 0.45s ease';
+        cardContent.style.opacity = '0';
+
+        setTimeout(() => {
+          populateCardFront(currentCard);   // replaces the awaiting content with the full front
+
+          cardContent.style.opacity = '1';
+
+          // Trigger sound + message after the crossfade
+          setTimeout(() => {
+            playRevealSound();
+            fadeInMessage(interpretation);
+            cardEl.classList.add('card-revealed'); // just a marker so redraw knows it's revealed
+            hasDrawn = true;
+            if (navigator.vibrate) navigator.vibrate(8);
+          }, 280);
+        }, 40);
+      } else {
+        // === REDRAW: Outer card frame on the right never moves or changes at all.
+        // Only the interior content gently dims, swaps, and fades back.
+        cardContent.style.transition = 'opacity 0.2s ease';
+        cardContent.style.opacity = '0.15';
+
+        setTimeout(() => {
+          populateCardFront(currentCard);
+
+          cardContent.style.opacity = '1';
+
+          setTimeout(() => {
+            playRevealSound();
+            fadeInMessage(interpretation);
+            if (navigator.vibrate) navigator.vibrate(5);
+          }, 160);
+        }, 120);
+      }
+    }
+
+    function fadeInMessage(el) {
+      el.style.transition = 'none';
+      el.style.opacity = '0';
+      el.classList.remove('hidden');
+
+      // Force reflow
+      void el.offsetWidth;
+
+      el.style.transition = 'opacity 0.45s cubic-bezier(0.23, 1.0, 0.32, 1)';
+      el.style.opacity = '1';
+
+      // Update the actual text content
+      document.getElementById('daily-message').innerHTML = currentCard.daily;
+      document.getElementById('essence').innerHTML = 
+        `<span class="font-medium text-[#c9a36b]">${currentCard.keyword}.</span> ${currentCard.essence}`;
+    }
+
+    // Subtle magical chime on reveal
+    function playRevealSound() {
+      try {
+        const audio = new (window.AudioContext || window.webkitAudioContext)();
+        const o = audio.createOscillator();
+        const g = audio.createGain();
+        const f = audio.createBiquadFilter();
+
+        o.type = 'sine';
+        o.frequency.value = 620;
+
+        f.type = 'lowpass';
+        f.frequency.value = 1400;
+
+        g.gain.value = 0.0001;
+
+        const o2 = audio.createOscillator();
+        o2.type = 'sine';
+        o2.frequency.value = 880;
+
+        const g2 = audio.createGain();
+        g2.gain.value = 0.0001;
+
+        const master = audio.createGain();
+        master.gain.value = 0.12;
+
+        o.connect(f);
+        f.connect(g);
+        g.connect(master);
+
+        o2.connect(g2);
+        g2.connect(master);
+        master.connect(audio.destination);
+
+        const now = audio.currentTime;
+        o.start(now);
+        o2.start(now);
+
+        // Gentle swell + decay
+        g.gain.setValueAtTime(0.0001, now);
+        g.gain.linearRampToValueAtTime(0.08, now + 0.06);
+        g.gain.linearRampToValueAtTime(0.0001, now + 1.1);
+
+        g2.gain.setValueAtTime(0.0001, now + 0.08);
+        g2.gain.linearRampToValueAtTime(0.035, now + 0.14);
+        g2.gain.linearRampToValueAtTime(0.0001, now + 0.9);
+
+        o.stop(now + 1.4);
+        o2.stop(now + 1.2);
+      } catch (e) {}
+    }
+
+    // Handle clicking the revealed (right) card to redraw
+    function handleDrawnCardClick() {
+      const cardEl = document.getElementById('oracle-card');
+
+      if (!hasDrawn) {
+        drawCard();
+      } else {
+        // Clicking the revealed card on the right draws a fresh one
+        drawCard(true);
+      }
+    }
+
+    function copyMessage() {
+      if (!currentCard) return;
+
+      const text = `${currentCard.name} — ${currentCard.keyword}\n\n${currentCard.daily}\n\n${currentCard.essence}`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const originalText = event.target?.innerText || '';
+        const btns = document.querySelectorAll('#interpretation button');
+        
+        btns.forEach(btn => {
+          if (btn.innerText.includes('SAVE') || btn.innerText.includes('MESSAGE')) {
+            const original = btn.innerHTML;
+            btn.innerHTML = `<i class="fa-solid fa-check text-xs"></i> <span>COPIED</span>`;
+            btn.style.pointerEvents = 'none';
+            
+            setTimeout(() => {
+              btn.innerHTML = original;
+              btn.style.pointerEvents = '';
+            }, 1600);
+          }
+        });
+      }).catch(() => {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        alert('Message copied to clipboard.');
+      });
+    }
+
+    // Keyboard support
+    function initKeyboard() {
+      document.addEventListener('keydown', (e) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          const card = document.getElementById('oracle-card');
+          if (document.activeElement.tagName === 'BUTTON') return;
+          
+          e.preventDefault();
+          if (!hasDrawn) {
+            drawCard();
+          } else {
+            drawCard(true);
+          }
+        }
+        
+        if (e.key.toLowerCase() === 'r' && hasDrawn) {
+          drawCard(true);
+        }
+      });
+
+      // Hint
+      const hint = document.createElement('div');
+      hint.className = 'hidden md:block fixed bottom-5 right-5 text-[10px] text-[#5c5344]';
+      hint.innerHTML = 'Press <span class="font-mono bg-[#16132a] px-1.5 py-px rounded">SPACE</span> or <span class="font-mono bg-[#16132a] px-1.5 py-px rounded">R</span> to redraw';
+      document.body.appendChild(hint);
+    }
+
+    // Subtle entrance animation for the cards on load
+    function initEntrance() {
+      const rightCard = document.getElementById('oracle-card');
+      const leftCard = document.getElementById('deck-card');
+
+      // Right card (the one that will flip)
+      if (rightCard) {
+        rightCard.style.opacity = '0';
+        rightCard.style.transform = 'translateY(22px)';
+
+        setTimeout(() => {
+          rightCard.style.transition = 'all 0.75s cubic-bezier(0.23, 1.0, 0.32, 1)';
+          rightCard.style.opacity = '1';
+          rightCard.style.transform = 'translateY(0)';
+        }, 320);
+      }
+
+      // Left deck card - slightly earlier, more subtle
+      if (leftCard) {
+        leftCard.style.opacity = '0';
+        leftCard.style.transform = 'translateY(16px) scale(0.985)';
+
+        setTimeout(() => {
+          leftCard.style.transition = 'all 0.65s cubic-bezier(0.23, 1.0, 0.32, 1)';
+          leftCard.style.opacity = '1';
+          leftCard.style.transform = 'translateY(0) scale(1)';
+        }, 180);
+      }
+    }
+
+    // Initialize everything
+    function init() {
+      initTailwind();
+      setTodayDate();
+      initKeyboard();
+      initEntrance();
+
+      // Optional: pre-load a tiny hint that the right card is interactive
+      setTimeout(() => {
+        const rightCard = document.getElementById('oracle-card');
+        if (rightCard && !hasDrawn) {
+          rightCard.style.boxShadow = '0 25px 70px -15px rgb(0 0 0 / 0.5), 0 10px 30px -10px rgb(0 0 0 / 0.4), 0 0 0 1px rgba(201,163,107,0.15)';
+        }
+      }, 1400);
+    }
+
+    // Boot
+    window.onload = init;
+  </script>
+</body>
+</html>
