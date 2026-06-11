@@ -383,6 +383,18 @@
         display: none;
       }
 
+      /* Center the intro text ("One card. One message.") and button on mobile */
+      .intro-column {
+        text-align: center;
+      }
+      .intro-column .flex.items-center.gap-4 {
+        justify-content: center;
+      }
+      .intro-column button {
+        margin-left: auto;
+        margin-right: auto;
+      }
+
       /* Bug 3: Hide the decorative rule lines flanking "THE DECK" in the header.
          Only the text remains visible. */
       .deck-rule {
@@ -452,7 +464,7 @@
     <!-- Main two-column -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-start">
       <!-- Left column -->
-      <div>
+      <div class="intro-column">
         <div class="flex items-center gap-4 mb-4">
           <div class="h-px flex-1 bg-[#C4A35A]/40"></div>
           <span class="text-[10px] tracking-[3.5px] text-[#C4A35A]">A 33-CARD ORACLE</span>
