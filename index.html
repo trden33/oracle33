@@ -351,23 +351,35 @@
 
     /* Mobile-only fixes (max-width: 768px). Desktop layout completely unchanged. */
     @media (max-width: 768px) {
+      /* Make the main rectangle (.chassis) spread full-width across the screen on mobile only.
+         This is the primary fix so the DAILY GUIDANCE pill with date sits clearly inside
+         the visual rectangle instead of looking like it's outside or clipped.
+         - Small consistent gutter on far left/right of screen via body padding.
+         - Rounded corners preserved (not touched here).
+         - Breathing room comes from the chassis's existing internal padding. */
+      body {
+        padding-left: 12px;
+        padding-right: 12px;
+      }
+      .chassis {
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100%;
+      }
+
       /* Bug 3: Hide the decorative rule lines flanking "THE DECK" in the header.
          Only the text remains visible. */
       .deck-rule {
         display: none !important;
       }
 
-      /* Bug 1: DAILY GUIDANCE pill overflowing on small screens.
-         Make the pill container expand to fit its text naturally (no text clipping).
-         min-width + flex-shrink prevent the flex from squeezing it below content size.
-         overflow visible, no clipping. Reduced left padding gives it room on narrow viewports
-         without shrinking the text or font. */
+      /* DAILY GUIDANCE pill: chassis width is now the main solution for containment.
+         Kept these to ensure the pill never squeezes its text. */
       .daily-guidance-pill {
         min-width: fit-content;
         overflow: visible;
         flex-shrink: 0;
-        padding-left: 0.75rem;
-        padding-right: 0.75rem;
       }
 
       /* Bug 2: Quote inside drawn oracle card overlapping "FOR YOUR DAY" on mobile.
