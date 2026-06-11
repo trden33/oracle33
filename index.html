@@ -505,6 +505,7 @@
 <script>
     let currentCard = null;
     let hasDrawn = false;
+    let isCardFaceUp = false;  // for the flip-back behavior on locked days
 
     // Tailwind script configuration
     function initTailwind() {
@@ -1151,23 +1152,71 @@
       }
     }
 
+    // Helper to show the back of the card (for flip behavior)
+    function showCardBack() {
+      const content = document.getElementById('card-content');
+      content.innerHTML = `
+        <div class="right-back flex flex-col items-center justify-center relative w-full h-full">
+          <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.0)_100%)]" style="pointer-events: none;"></div>
+          <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10" style="pointer-events: none;"></div>
+        </div>
+      `;
+      document.getElementById('oracle-card').classList.remove('card-revealed');
+      isCardFaceUp = false;
+    }
+
+    // Reveal the user's saved card (front side)
+    function revealSavedCard() {
+      if (!currentCard) return;
+
+      const content = document.getElementById('card-content');
+      populateCardFront(currentCard);
+      document.getElementById('oracle-card').classList.add('card-revealed');
+      isCardFaceUp = true;
+
+      // Show the message section
+      const interpretation = document.getElementById('interpretation');
+      interpretation.classList.remove('hidden');
+      interpretation.style.opacity = '1';
+
+      document.getElementById('daily-message').innerHTML = currentCard.daily;
+      document.getElementById('essence').innerHTML = 
+        `<span class="font-medium text-[#C4A35A]">${currentCard.keyword}.</span> ${currentCard.essence}`;
+
+      // Add reminder if not present
+      if (!interpretation.querySelector('.locked-reminder')) {
+        const reminder = document.createElement('div');
+        reminder.className = 'mt-4 text-[9px] tracking-[2px] text-[#C4A35A] text-center locked-reminder';
+        reminder.innerHTML = '✦ You\'ve already drawn today\'s card.<br>Come back tomorrow for a new one. ✦';
+        interpretation.appendChild(reminder);
+      }
+    }
+
     // Main draw function
     function drawCard(forceNew = false) {
-      if (!canDrawToday()) {
-        return;
-      }
-
       const cardEl = document.getElementById('oracle-card');
       const interpretation = document.getElementById('interpretation');
       const glow = document.getElementById('card-glow');
 
+      const todayStr = getTodayString();
+      const lastDraw = localStorage.getItem('lastOracleDrawDate');
+
+      // If the user has already drawn today, treat clicking "draw" as revealing their saved card
+      // (instead of blocking or giving a new random one)
+      if (lastDraw === todayStr && hasDrawn && currentCard) {
+        revealSavedCard();
+        // Hide the main draw button once they have revealed it this session
+        const mainDrawBtn = document.getElementById('main-draw-btn');
+        if (mainDrawBtn) mainDrawBtn.style.display = 'none';
+        return;
+      }
+
       const isFirstDraw = !hasDrawn && !forceNew;
 
       if (isFirstDraw) {
-        // First draw of the day: pick a truly random card (not date-seeded)
-        // This is the user's "one card for today"
+        // First draw of the day: pick a truly random card
         currentCard = getCard(false);
-        localStorage.setItem('lastOracleDrawDate', getTodayString());
+        localStorage.setItem('lastOracleDrawDate', todayStr);
         localStorage.setItem('drawnCardId', currentCard.id);
       } else {
         currentCard = getCard(forceNew);
@@ -1205,6 +1254,7 @@
             fadeInMessage(interpretation);
             cardEl.classList.add('card-revealed');
             hasDrawn = true;
+            isCardFaceUp = true;
             if (navigator.vibrate) navigator.vibrate(8);
 
             // Hide main draw button and DRAW ANOTHER options (limit already saved before animation)
@@ -1313,17 +1363,18 @@
 
     // Handle clicking the revealed (right) card to redraw
     function handleDrawnCardClick() {
-      if (!canDrawToday()) {
-        return;
-      }
-
       const cardEl = document.getElementById('oracle-card');
 
       if (!hasDrawn) {
         drawCard();
+        return;
+      }
+
+      // User has a card for today (locked). Toggle flip between front and back.
+      if (isCardFaceUp) {
+        showCardBack();
       } else {
-        // Clicking the revealed card on the right draws a fresh one
-        drawCard(true);
+        revealSavedCard();
       }
     }
 
@@ -1368,21 +1419,25 @@
           if (document.activeElement.tagName === 'BUTTON') return;
           
           e.preventDefault();
-          if (!canDrawToday()) {
-            return;
-          }
           if (!hasDrawn) {
             drawCard();
           } else {
-            drawCard(true);
+            // Toggle flip for the locked card
+            if (isCardFaceUp) {
+              showCardBack();
+            } else {
+              revealSavedCard();
+            }
           }
         }
         
         if (e.key.toLowerCase() === 'r' && hasDrawn) {
-          if (!canDrawToday()) {
-            return;
+          // Toggle flip instead of new draw
+          if (isCardFaceUp) {
+            showCardBack();
+          } else {
+            revealSavedCard();
           }
-          drawCard(true);
         }
       });
 
@@ -1435,7 +1490,8 @@
       const todayStr = getTodayString();
       const lastDraw = localStorage.getItem('lastOracleDrawDate');
       if (lastDraw === todayStr) {
-        // User has already drawn today — show the saved random card in locked state
+        // User has already drawn today — load their card data but do NOT auto-reveal it.
+        // They should still see the initial "draw" interface and be able to "draw" (reveal) their card.
         let savedId = localStorage.getItem('drawnCardId');
         let cardToShow = null;
 
@@ -1445,46 +1501,17 @@
 
         if (!cardToShow) {
           // Defensive: if date matches but we don't have a cardId saved yet
-          // (e.g. after deploy or partial save), pick a random one now and persist it
           cardToShow = getCard(false);
           localStorage.setItem('drawnCardId', cardToShow.id);
-          // Make sure the date key is also set
           localStorage.setItem('lastOracleDrawDate', todayStr);
         }
 
         currentCard = cardToShow;
         hasDrawn = true;
 
-        // Populate and reveal the card immediately
-        const cardContent = document.getElementById('card-content');
-        populateCardFront(currentCard);
-        const oracleCardEl = document.getElementById('oracle-card');
-        oracleCardEl.classList.add('card-revealed');
-
-        const interpretation = document.getElementById('interpretation');
-        interpretation.classList.remove('hidden');
-        interpretation.style.opacity = '1';
-
-        document.getElementById('daily-message').innerHTML = currentCard.daily;
-        document.getElementById('essence').innerHTML = 
-          `<span class="font-medium text-[#C4A35A]">${currentCard.keyword}.</span> ${currentCard.essence}`;
-
-        // Disable further drawing UI
-        const mainDrawBtn = document.getElementById('main-draw-btn');
-        if (mainDrawBtn) mainDrawBtn.style.display = 'none';
-
-        // Hide DRAW ANOTHER buttons
-        document.querySelectorAll('#interpretation button').forEach(btn => {
-          if (btn.textContent.toUpperCase().includes('DRAW ANOTHER')) {
-            btn.style.display = 'none';
-          }
-        });
-
-        // Add a friendly locked message
-        const reminder = document.createElement('div');
-        reminder.className = 'mt-4 text-[9px] tracking-[2px] text-[#C4A35A] text-center';
-        reminder.innerHTML = '✦ You\'ve already drawn today\'s card.<br>Come back tomorrow for a new one. ✦';
-        interpretation.appendChild(reminder);
+        // IMPORTANT: Do not populate or add 'card-revealed' here.
+        // Leave the right card showing the back side so the user can "draw" it.
+        // The main draw button stays visible.
       }
 
       // Optional: pre-load a tiny hint that the right card is interactive
@@ -1496,11 +1523,11 @@
       }, 1400);
 
       // Safety net for one-card-per-day lock (in case the main locked block didn't run)
-      // This ensures that if localStorage says we've drawn today, the UI is locked
-      // and the correct card is shown even on refresh.
+      // Load the saved card data but do NOT auto-reveal the front.
+      // User should still be able to "draw" (reveal) their saved card.
       if (!canDrawToday()) {
         const mainDrawBtn = document.getElementById('main-draw-btn');
-        if (mainDrawBtn) mainDrawBtn.style.display = 'none';
+        if (mainDrawBtn) mainDrawBtn.style.display = '';  // keep visible so they can "draw"
 
         document.querySelectorAll('#interpretation button').forEach(btn => {
           if (btn.textContent.toUpperCase().includes('DRAW ANOTHER')) {
@@ -1508,8 +1535,6 @@
           }
         });
 
-        // If we don't have a currentCard yet (locked block didn't trigger),
-        // restore from saved ID
         if (!currentCard) {
           const savedId = localStorage.getItem('drawnCardId');
           if (savedId) {
@@ -1517,28 +1542,7 @@
             if (savedCard) {
               currentCard = savedCard;
               hasDrawn = true;
-
-              const cardContent = document.getElementById('card-content');
-              populateCardFront(currentCard);
-
-              const oracleCardEl = document.getElementById('oracle-card');
-              oracleCardEl.classList.add('card-revealed');
-
-              const interpretation = document.getElementById('interpretation');
-              interpretation.classList.remove('hidden');
-              interpretation.style.opacity = '1';
-
-              document.getElementById('daily-message').innerHTML = currentCard.daily;
-              document.getElementById('essence').innerHTML = 
-                `<span class="font-medium text-[#C4A35A]">${currentCard.keyword}.</span> ${currentCard.essence}`;
-
-              // Add the reminder if not already there
-              if (!interpretation.querySelector('.locked-reminder')) {
-                const reminder = document.createElement('div');
-                reminder.className = 'mt-4 text-[9px] tracking-[2px] text-[#C4A35A] text-center locked-reminder';
-                reminder.innerHTML = '✦ You\'ve already drawn today\'s card.<br>Come back tomorrow for a new one. ✦';
-                interpretation.appendChild(reminder);
-              }
+              // Do not auto-reveal here
             }
           }
         }
