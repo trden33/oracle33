@@ -29,26 +29,15 @@
 
     .oracle-card {
       cursor: pointer;
-      transition: transform 0.2s cubic-bezier(0.23, 1.0, 0.32, 1), box-shadow 0.3s ease;
-    }
-
-    #oracle-card.card-revealed:hover {
-      box-shadow: 0 16px 38px -10px rgb(0 0 0 / 0.22);
+      transition: transform 0.2s cubic-bezier(0.23, 1.0, 0.32, 1);
     }
 
     .deck-card {
-      box-shadow: 
-        0 20px 50px -15px rgb(0 0 0 / 0.22),
-        0 8px 24px -8px rgb(0 0 0 / 0.12);
-      transition: transform 0.25s cubic-bezier(0.23, 1.0, 0.32, 1), 
-                  box-shadow 0.25s ease;
+      transition: transform 0.25s cubic-bezier(0.23, 1.0, 0.32, 1);
     }
 
     .deck-card:hover {
       transform: translateY(-6px) scale(1.015);
-      box-shadow: 
-        0 26px 60px -12px rgb(0 0 0 / 0.26),
-        0 12px 30px -8px rgb(0 0 0 / 0.15);
     }
 
     /* Make sure absolute children inside the static left deck are contained */
@@ -58,12 +47,8 @@
 
     /* Right position awaiting card — uses the same reference image as the left deck for visual harmony */
     .right-back {
-      border-radius: 18px;
       position: relative;
       overflow: hidden;
-      box-shadow: 
-        0 18px 45px -12px rgb(0 0 0 / 0.35),
-        0 8px 22px -6px rgb(0 0 0 / 0.18);
     }
 
     .right-back::before {
@@ -80,12 +65,8 @@
 
     /* Static deck back — uses the reference temple image faithfully (dark moody atmosphere, natural teal upper glow + red floor cracks) */
     .static-deck-back {
-      border-radius: 18px;
       position: relative;
       overflow: hidden;
-      box-shadow: 
-        0 18px 45px -12px rgb(0 0 0 / 0.35),
-        0 8px 22px -6px rgb(0 0 0 / 0.18);
     }
 
     .static-deck-back::before {
@@ -106,15 +87,12 @@
       width: 100%;
       height: 100%;
       text-align: center;
-      box-shadow: 0 25px 70px -15px rgb(0 0 0 / 0.5),
-                  0 10px 30px -10px rgb(0 0 0 / 0.4);
     }
 
     .card-face {
       position: absolute;
       width: 100%;
       height: 100%;
-      border-radius: 18px;
       overflow: hidden;
     }
 
@@ -162,52 +140,9 @@
     .card-front {
       position: relative;
       overflow: hidden;
-      background: linear-gradient(165deg, #f8f4e9 0%, #f1e9d9 100%);
+      background: #f8f4e9;
       color: #2c2520;
-      box-shadow: 
-        0 15px 40px -10px rgb(0 0 0 / 0.25),
-        inset 0 1px 0 rgba(255,255,255,0.9),
-        inset 0 -1px 0 rgba(140,110,70,0.12);
     }
-
-    .card-front::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: 
-        linear-gradient(to bottom, rgba(196, 163, 90,0.05) 0%, transparent 20%),
-        linear-gradient(to top, rgba(140, 110, 70, 0.03) 0%, transparent 25%);
-      pointer-events: none;
-    }
-
-    .gold-border {
-      position: absolute;
-      inset: 11px;
-      border: 1px solid #C4A35A;
-      border-radius: 12px;
-      opacity: 0.45;
-    }
-
-    .inner-border {
-      position: absolute;
-      inset: 19px;
-      border: 1px solid #C4A35A;
-      border-radius: 8px;
-      opacity: 0.25;
-    }
-
-    .ornate-corner {
-      position: absolute;
-      width: 38px;
-      height: 38px;
-      border: 1px solid #C4A35A;
-      opacity: 0.35;
-    }
-
-    .ornate-corner.tl { top: 22px; left: 22px; border-right: none; border-bottom: none; border-top-left-radius: 4px; }
-    .ornate-corner.tr { top: 22px; right: 22px; border-left: none; border-bottom: none; border-top-right-radius: 4px; }
-    .ornate-corner.bl { bottom: 22px; left: 22px; border-right: none; border-top: none; border-bottom-left-radius: 4px; }
-    .ornate-corner.br { bottom: 22px; right: 22px; border-left: none; border-top: none; border-bottom-right-radius: 4px; }
 
     .card-title {
       font-family: 'Playfair Display', Georgia, serif;
@@ -215,31 +150,15 @@
     }
 
     .symbol-circle {
-      background: radial-gradient(circle at 42% 32%, #f8f4e9, #e8dcc4 55%, #d9c9a3 100%);
-      box-shadow: 
-        inset 0 3px 10px rgba(255,255,255,0.95),
-        inset 0 -6px 14px rgba(140,110,70,0.22),
-        0 6px 16px rgba(0,0,0,0.12),
-        0 0 0 1px rgba(196,163,90,0.15);
+      background: #f1e9d9;
       display: flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      border: 1px solid rgba(196,163,90,0.25);
-    }
-
-    .symbol-circle::after {
-      content: '';
-      position: absolute;
-      inset: -2px;
-      border-radius: 9999px;
-      border: 1px solid #C4A35A;
-      opacity: 0.25;
     }
 
     .oracle-glow {
-      box-shadow: 0 0 0 1px rgba(201, 163, 107, 0.2),
-                  0 10px 50px -15px rgb(201 163 107 / 0.25);
+      /* glow removed */
     }
 
     /* The right card frame is always static in place on the right.
@@ -495,7 +414,7 @@
           <div class="text-[10px] tracking-[2.8px] text-[#C4A35A] mb-1.5 md:mb-2 text-center">YOUR ORACLE</div>
           <div class="relative">
             <!-- Ambient gold glow behind the right card (controlled by JS drawCard) -->
-            <div id="card-glow" class="oracle-glow absolute -inset-3 sm:-inset-4 md:-inset-5 rounded-[22px] sm:rounded-[24px] md:rounded-[26px] pointer-events-none" style="z-index: -1; background: radial-gradient(circle at 50% 45%, rgba(196,163,90,0.22) 0%, rgba(196,163,90,0.06) 45%, transparent 70%); opacity: 0;"></div>
+            <div id="card-glow" class="oracle-glow absolute -inset-3 sm:-inset-4 md:-inset-5 pointer-events-none" style="z-index: -1; background: radial-gradient(circle at 50% 45%, rgba(196,163,90,0.22) 0%, rgba(196,163,90,0.06) 45%, transparent 70%); opacity: 0;"></div>
             <div id="oracle-card" class="oracle-card w-[162px] h-[238px] sm:w-[198px] sm:h-[290px] md:w-[270px] md:h-[400px]" onclick="handleDrawnCardClick()">
               <div id="card-content" class="w-full h-full">
                 <!-- Initial awaiting state - pure image -->
@@ -1073,7 +992,7 @@
       const content = document.getElementById('card-content');
       
       content.innerHTML = `
-        <div class="card-front flex flex-col px-4 pt-4 pb-0 sm:px-5 sm:pt-5 sm:pb-0 md:px-7 md:pt-7 md:pb-0 text-[#2c2520] w-full h-full rounded-[18px] relative">
+        <div class="card-front flex flex-col px-4 pt-4 pb-0 sm:px-5 sm:pt-5 sm:pb-0 md:px-7 md:pt-7 md:pb-0 text-[#2c2520] w-full h-full relative">
           <div class="relative flex flex-col h-full inner-content">
             <!-- Top label -->
             <div class="flex justify-between items-center text-[7.5px] sm:text-[8px] md:text-[8.5px] tracking-[2px] sm:tracking-[2.3px] md:tracking-[2.5px] text-[#C4A35A]/80 font-medium px-0.5">
