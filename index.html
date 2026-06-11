@@ -378,6 +378,11 @@
         align-items: flex-start;
       }
 
+      /* Remove the dot between "ORACLE" and "33" in the logo on mobile only */
+      .logo-dot {
+        display: none;
+      }
+
       /* Bug 3: Hide the decorative rule lines flanking "THE DECK" in the header.
          Only the text remains visible. */
       .deck-rule {
@@ -420,7 +425,7 @@
           <div class="w-8 h-8 rounded-full border border-[#C4A35A] flex items-center justify-center">
             <i class="fa-solid fa-infinity text-[#C4A35A]"></i>
           </div>
-          <span class="text-2xl font-semibold tracking-tighter">ORACLE<span class="text-[#C4A35A]">.</span>33</span>
+          <span class="text-2xl font-semibold tracking-tighter">ORACLE<span class="text-[#C4A35A] logo-dot">.</span>33</span>
         </div>
 
         <!-- Daily guidance panel with the date - placed right below the Oracle 33 logo on mobile -->
