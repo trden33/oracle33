@@ -33,23 +33,22 @@
     }
 
     #oracle-card.card-revealed:hover {
-      box-shadow: 0 20px 50px -12px rgb(0 0 0 / 0.28);
+      box-shadow: 0 16px 38px -10px rgb(0 0 0 / 0.22);
     }
 
     .deck-card {
       box-shadow: 
-        0 25px 65px -18px rgb(0 0 0 / 0.28),
-        0 10px 30px -10px rgb(0 0 0 / 0.16);
+        0 20px 50px -15px rgb(0 0 0 / 0.22),
+        0 8px 24px -8px rgb(0 0 0 / 0.12);
       transition: transform 0.25s cubic-bezier(0.23, 1.0, 0.32, 1), 
                   box-shadow 0.25s ease;
-      border: 1px solid rgba(10, 8, 18, 0.4);
     }
 
     .deck-card:hover {
       transform: translateY(-6px) scale(1.015);
       box-shadow: 
-        0 35px 80px -15px rgb(0 0 0 / 0.32),
-        0 14px 38px -10px rgb(0 0 0 / 0.18);
+        0 26px 60px -12px rgb(0 0 0 / 0.26),
+        0 12px 30px -8px rgb(0 0 0 / 0.15);
     }
 
     /* Make sure absolute children inside the static left deck are contained */
@@ -59,13 +58,12 @@
 
     /* Right position awaiting card — uses the same reference image as the left deck for visual harmony */
     .right-back {
-      border: 1px solid rgba(10, 8, 18, 0.4);
       border-radius: 18px;
       position: relative;
       overflow: hidden;
       box-shadow: 
-        0 25px 60px -15px rgb(0 0 0 / 0.55),
-        0 10px 30px -10px rgb(0 0 0 / 0.35);
+        0 18px 45px -12px rgb(0 0 0 / 0.35),
+        0 8px 22px -6px rgb(0 0 0 / 0.18);
     }
 
     .right-back::before {
@@ -82,13 +80,12 @@
 
     /* Static deck back — uses the reference temple image faithfully (dark moody atmosphere, natural teal upper glow + red floor cracks) */
     .static-deck-back {
-      border: 1px solid rgba(10, 8, 18, 0.4);
       border-radius: 18px;
       position: relative;
       overflow: hidden;
       box-shadow: 
-        0 30px 70px -18px rgb(0 0 0 / 0.55),
-        0 12px 35px -10px rgb(0 0 0 / 0.35);
+        0 18px 45px -12px rgb(0 0 0 / 0.35),
+        0 8px 22px -6px rgb(0 0 0 / 0.18);
     }
 
     .static-deck-back::before {
@@ -167,7 +164,6 @@
       overflow: hidden;
       background: linear-gradient(165deg, #f8f4e9 0%, #f1e9d9 100%);
       color: #2c2520;
-      border: 1px solid #C4A35A;
       box-shadow: 
         0 15px 40px -10px rgb(0 0 0 / 0.25),
         inset 0 1px 0 rgba(255,255,255,0.9),
@@ -412,7 +408,7 @@
             <div class="static-deck-back flex flex-col items-center justify-center w-full h-full overflow-hidden">
               <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.0)_100%)]" style="pointer-events: none;"></div>
               <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/10" style="pointer-events: none;"></div>
-              <div class="absolute bottom-5 sm:bottom-6 md:bottom-8 text-[8px] sm:text-[9px] text-[#C4A35A] tracking-[2.4px] md:tracking-[2.8px] font-medium" style="text-shadow: 0 1px 4px rgba(0,0,0,0.95);">TAP TO DRAW</div>
+              <div class="absolute bottom-5 sm:bottom-6 md:bottom-8 text-[8px] sm:text-[9px] text-[#C4A35A] tracking-[2.4px] md:tracking-[2.8px] font-medium" style="text-shadow: 0 1px 4px rgba(0,0,0,0.95); pointer-events: none;">TAP TO DRAW</div>
             </div>
           </div>
         </div>
@@ -479,6 +475,9 @@
     </div>
   </div>
 <script>
+    let currentCard = null;
+    let hasDrawn = false;
+
     // Tailwind script configuration
     function initTailwind() {
       document.documentElement.style.setProperty('--accent', '#C4A35A');
@@ -978,7 +977,7 @@
       const content = document.getElementById('card-content');
       
       content.innerHTML = `
-        <div class="card-front flex flex-col px-4 py-4 sm:px-5 sm:py-5 md:px-7 md:py-7 text-[#2c2520] w-full h-full rounded-[18px]">
+        <div class="card-front flex flex-col px-4 pt-4 pb-0 sm:px-5 sm:pt-5 sm:pb-0 md:px-7 md:pt-7 md:pb-0 text-[#2c2520] w-full h-full rounded-[18px] relative">
           <div class="relative flex flex-col h-full">
             <!-- Top label -->
             <div class="flex justify-between items-center text-[7.5px] sm:text-[8px] md:text-[8.5px] tracking-[2px] sm:tracking-[2.3px] md:tracking-[2.5px] text-[#C4A35A]/80 font-medium px-0.5">
@@ -1016,14 +1015,14 @@
             </div>
 
             <div class="flex-1"></div>
+          </div>
 
-            <!-- Bottom accent aligned to same level as left's "TAP TO DRAW" -->
-            <div class="absolute bottom-4 sm:bottom-5 md:bottom-8 left-1/2 -translate-x-1/2">
-              <div class="inline-flex items-center gap-x-1 text-[7.5px] sm:text-[8px] md:text-[9px] text-[#C4A35A] tracking-[2.2px] sm:tracking-[2.5px] md:tracking-[2.8px] font-medium" style="text-shadow: 0 1px 2px rgba(0,0,0,0.1);">
-                <span class="font-mono">✧</span>
-                <span>FOR YOUR DAY</span>
-                <span class="font-mono">✧</span>
-              </div>
+          <!-- Bottom label — now direct child of .card-front (with pb-0) so bottom offset matches the left deck container -->
+          <div class="absolute bottom-5 sm:bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10">
+            <div class="inline-flex items-center gap-x-1 text-[8px] sm:text-[9px] tracking-[2.4px] md:tracking-[2.8px] text-[#C4A35A] font-medium whitespace-nowrap" style="text-shadow: 0 1px 2px rgba(0,0,0,0.1);">
+              <span class="font-mono">✧</span>
+              <span>FOR YOUR DAY</span>
+              <span class="font-mono">✧</span>
             </div>
           </div>
         </div>
@@ -1043,19 +1042,16 @@
     }
 
     // Main draw function
-    let currentCard = null;
-    let hasDrawn = false;
-
     function drawCard(forceNew = false) {
       const cardEl = document.getElementById('oracle-card');
       const interpretation = document.getElementById('interpretation');
       const glow = document.getElementById('card-glow');
 
-      // Pick card
+      // Pick card — first draw of the session is date-seeded
       const isFirstDraw = !hasDrawn && !forceNew;
-      currentCard = getCard(isFirstDraw); // First draw is "daily" seeded
+      currentCard = getCard(isFirstDraw);
 
-      // Show glow behind the right card (defensive guard)
+      // Show glow behind the right card
       if (glow) {
         glow.style.opacity = '0.13';
         setTimeout(() => {
@@ -1066,14 +1062,12 @@
       const cardContent = document.getElementById('card-content');
 
       if (isFirstDraw || !cardEl.classList.contains('card-revealed')) {
-        // === FIRST REVEAL: Right card frame is 100% static on the right.
-        // Interior content crossfades elegantly from minimal rings → full oracle card.
+        // === FIRST REVEAL: nice crossfade from back to full card
         cardContent.style.transition = 'opacity 0.5s cubic-bezier(0.23,1,0.32,1)';
         cardContent.style.opacity = '0';
 
         setTimeout(() => {
           populateCardFront(currentCard);
-
           cardContent.style.opacity = '1';
 
           // Gentle bloom on the ambient glow
@@ -1081,7 +1075,7 @@
           if (glow) {
             glow.style.transition = 'opacity 0.8s ease';
             glow.style.opacity = '0.11';
-            setTimeout(() => { glow.style.opacity = '0.07'; }, 900);
+            setTimeout(() => { if (glow) glow.style.opacity = '0.07'; }, 900);
           }
 
           setTimeout(() => {
@@ -1093,13 +1087,12 @@
           }, 320);
         }, 35);
       } else {
-        // === REDRAW: Card frame stays perfectly still. Only interior content refreshes.
+        // === REDRAW: quick content swap, frame stays put
         cardContent.style.transition = 'opacity 0.18s ease';
         cardContent.style.opacity = '0.12';
 
         setTimeout(() => {
           populateCardFront(currentCard);
-
           cardContent.style.opacity = '1';
 
           setTimeout(() => {
@@ -1128,55 +1121,53 @@
         `<span class="font-medium text-[#C4A35A]">${currentCard.keyword}.</span> ${currentCard.essence}`;
     }
 
-    // Subtle magical chime on reveal
+    // Soft ethereal tone on every card tap / draw
     function playRevealSound() {
       try {
         const audio = new (window.AudioContext || window.webkitAudioContext)();
-        const o = audio.createOscillator();
-        const g = audio.createGain();
-        const f = audio.createBiquadFilter();
-
-        o.type = 'sine';
-        o.frequency.value = 620;
-
-        f.type = 'lowpass';
-        f.frequency.value = 1400;
-
-        g.gain.value = 0.0001;
-
-        const o2 = audio.createOscillator();
-        o2.type = 'sine';
-        o2.frequency.value = 880;
-
-        const g2 = audio.createGain();
-        g2.gain.value = 0.0001;
+        const now = audio.currentTime;
 
         const master = audio.createGain();
-        master.gain.value = 0.12;
-
-        o.connect(f);
-        f.connect(g);
-        g.connect(master);
-
-        o2.connect(g2);
-        g2.connect(master);
+        master.gain.value = 0.058;
         master.connect(audio.destination);
 
-        const now = audio.currentTime;
-        o.start(now);
-        o2.start(now);
+        // Ethereal layered sines — soft open chord with slow, graceful bloom
+        const voices = [
+          { freq: 392, attack: 0.22, peak: 0.055, decay: 2.65 },   // G4
+          { freq: 523, attack: 0.34, peak: 0.038, decay: 2.35 },   // C5
+          { freq: 784, attack: 0.47, peak: 0.026, decay: 2.05 }    // G5 + slight shimmer
+        ];
 
-        // Gentle swell + decay
-        g.gain.setValueAtTime(0.0001, now);
-        g.gain.linearRampToValueAtTime(0.08, now + 0.06);
-        g.gain.linearRampToValueAtTime(0.0001, now + 1.1);
+        voices.forEach((v, i) => {
+          const osc = audio.createOscillator();
+          osc.type = 'sine';
+          osc.frequency.value = v.freq;
 
-        g2.gain.setValueAtTime(0.0001, now + 0.08);
-        g2.gain.linearRampToValueAtTime(0.035, now + 0.14);
-        g2.gain.linearRampToValueAtTime(0.0001, now + 0.9);
+          // Delicate detune on the highest voice for airy shimmer
+          if (i === 2) osc.frequency.value = v.freq + 1.8;
 
-        o.stop(now + 1.4);
-        o2.stop(now + 1.2);
+          const filter = audio.createBiquadFilter();
+          filter.type = 'lowpass';
+          filter.frequency.value = 1650;
+
+          const gain = audio.createGain();
+          gain.gain.value = 0.0001;
+
+          osc.connect(filter);
+          filter.connect(gain);
+          gain.connect(master);
+
+          osc.start(now);
+
+          const attackTime = now + v.attack;
+          const endTime = now + v.decay;
+
+          gain.gain.setValueAtTime(0.0001, now);
+          gain.gain.linearRampToValueAtTime(v.peak, attackTime);
+          gain.gain.linearRampToValueAtTime(0.0001, endTime);
+
+          osc.stop(endTime + 0.15);
+        });
       } catch (e) {}
     }
 
@@ -1293,7 +1284,7 @@
       setTimeout(() => {
         const rightCard = document.getElementById('oracle-card');
         if (rightCard && !hasDrawn) {
-          rightCard.style.boxShadow = '0 25px 70px -15px rgb(0 0 0 / 0.5), 0 10px 30px -10px rgb(0 0 0 / 0.4), 0 0 0 1px rgba(201,163,107,0.15)';
+          rightCard.style.boxShadow = '0 18px 45px -12px rgb(0 0 0 / 0.28), 0 8px 22px -6px rgb(0 0 0 / 0.14)';
         }
       }, 1400);
     }
