@@ -368,6 +368,16 @@
         width: 100%;
       }
 
+      /* Mobile layout: stack the daily guidance panel directly below the Oracle 33 logo */
+      .logo-section {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .app-header {
+        align-items: flex-start;
+      }
+
       /* Bug 3: Hide the decorative rule lines flanking "THE DECK" in the header.
          Only the text remains visible. */
       .deck-rule {
@@ -403,13 +413,21 @@
   <!-- Chassis wrapper -->
   <div class="chassis w-full max-w-[1200px] mx-auto p-4 sm:p-6 md:p-8">
     <!-- Header -->
-    <div class="flex items-center justify-between mb-6 sm:mb-8 md:mb-12">
-      <!-- Logo left -->
-      <div class="flex items-center gap-3">
-        <div class="w-8 h-8 rounded-full border border-[#C4A35A] flex items-center justify-center">
-          <i class="fa-solid fa-infinity text-[#C4A35A]"></i>
+    <div class="app-header flex items-center justify-between mb-6 sm:mb-8 md:mb-12">
+      <!-- Logo left + daily guidance panel right below it (mobile only for now) -->
+      <div class="logo-section">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full border border-[#C4A35A] flex items-center justify-center">
+            <i class="fa-solid fa-infinity text-[#C4A35A]"></i>
+          </div>
+          <span class="text-2xl font-semibold tracking-tighter">ORACLE<span class="text-[#C4A35A]">.</span>33</span>
         </div>
-        <span class="text-2xl font-semibold tracking-tighter">ORACLE<span class="text-[#C4A35A]">.</span>33</span>
+
+        <!-- Daily guidance panel with the date - placed right below the Oracle 33 logo on mobile -->
+        <div class="daily-guidance-below-logo daily-guidance-pill mt-1 px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2 md:hidden">
+          <span class="w-2 h-2 bg-[#C4A35A] rounded-full"></span>
+          DAILY GUIDANCE <span class="today-date text-[#8a7a65]"></span>
+        </div>
       </div>
 
       <!-- THE DECK center -->
@@ -419,10 +437,10 @@
         <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40 deck-rule"></div>
       </div>
 
-      <!-- Pill right -->
-      <div class="px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2 daily-guidance-pill">
+      <!-- Pill right (visible on desktop only) -->
+      <div class="px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2 daily-guidance-pill hidden md:flex">
         <span class="w-2 h-2 bg-[#C4A35A] rounded-full"></span>
-        DAILY GUIDANCE <span id="today-date" class="text-[#8a7a65]"></span>
+        DAILY GUIDANCE <span id="today-date" class="today-date text-[#8a7a65]"></span>
       </div>
     </div>
 
@@ -531,12 +549,14 @@
       document.documentElement.style.setProperty('--accent', '#C4A35A');
     }
 
-    // Set today's date
+    // Set today's date (supports both desktop pill and mobile below-logo panel)
     function setTodayDate() {
-      const el = document.getElementById('today-date');
       const date = new Date();
       const options = { month: 'long', day: 'numeric' };
-      el.textContent = date.toLocaleDateString('en-US', options).toUpperCase();
+      const dateStr = date.toLocaleDateString('en-US', options).toUpperCase();
+      document.querySelectorAll('.today-date').forEach(el => {
+        el.textContent = dateStr;
+      });
     }
 
     // The 33 Oracle Cards
