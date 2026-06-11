@@ -349,6 +349,42 @@
       z-index: 2;
     }
 
+    /* Mobile-only fixes (max-width: 768px). Desktop layout completely unchanged. */
+    @media (max-width: 768px) {
+      /* Bug 3: Hide the decorative rule lines flanking "THE DECK" in the header.
+         Only the text remains visible. */
+      .deck-rule {
+        display: none !important;
+      }
+
+      /* Bug 1: DAILY GUIDANCE pill overflowing on small screens.
+         Make the pill container expand to fit its text naturally (no text clipping).
+         min-width + flex-shrink prevent the flex from squeezing it below content size.
+         overflow visible, no clipping. Reduced left padding gives it room on narrow viewports
+         without shrinking the text or font. */
+      .daily-guidance-pill {
+        min-width: fit-content;
+        overflow: visible;
+        flex-shrink: 0;
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+      }
+
+      /* Bug 2: Quote inside drawn oracle card overlapping "FOR YOUR DAY" on mobile.
+         Smaller font, clamp the quote container height, and add bottom padding to the
+         inner content area so there is at least 12px clearance above the absolute label. */
+      .quote-container {
+        max-height: 2.5rem;
+        overflow: hidden;
+      }
+      .quote-container p {
+        font-size: 11px !important;
+      }
+      .card-front .inner-content {
+        padding-bottom: 12px;
+      }
+    }
+
   </style>
 </head>
 <body class="bg-[#EDEDEA] min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 font-sans overflow-x-hidden">
@@ -366,13 +402,13 @@
 
       <!-- THE DECK center -->
       <div class="flex items-center gap-2 sm:gap-4">
-        <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40"></div>
+        <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40 deck-rule"></div>
         <span class="text-[10px] sm:text-xs tracking-[3px] sm:tracking-[4px] text-[#C4A35A]">THE DECK</span>
-        <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40"></div>
+        <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40 deck-rule"></div>
       </div>
 
       <!-- Pill right -->
-      <div class="px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2">
+      <div class="px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2 daily-guidance-pill">
         <span class="w-2 h-2 bg-[#C4A35A] rounded-full"></span>
         DAILY GUIDANCE <span id="today-date" class="text-[#8a7a65]"></span>
       </div>
@@ -978,7 +1014,7 @@
       
       content.innerHTML = `
         <div class="card-front flex flex-col px-4 pt-4 pb-0 sm:px-5 sm:pt-5 sm:pb-0 md:px-7 md:pt-7 md:pb-0 text-[#2c2520] w-full h-full rounded-[18px] relative">
-          <div class="relative flex flex-col h-full">
+          <div class="relative flex flex-col h-full inner-content">
             <!-- Top label -->
             <div class="flex justify-between items-center text-[7.5px] sm:text-[8px] md:text-[8.5px] tracking-[2px] sm:tracking-[2.3px] md:tracking-[2.5px] text-[#C4A35A]/80 font-medium px-0.5">
               <div>ORACLE</div>
@@ -1008,7 +1044,7 @@
             </div>
 
             <!-- Essence quote -->
-            <div class="text-center px-1 sm:px-2">
+            <div class="text-center px-1 sm:px-2 quote-container">
               <p class="text-[10px] sm:text-[11px] md:text-[12.5px] italic text-[#5c5344] leading-snug tracking-[-0.1px]">
                 “${card.essence}”
               </p>
