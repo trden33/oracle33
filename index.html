@@ -291,9 +291,9 @@
     }
 
     .chassis {
-      background: #F2F0EC;
-      border-radius: 28px;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), inset 0 -1px 0 rgba(0,0,0,0.05);
+      background: transparent;
+      border-radius: 0;
+      box-shadow: none;
     }
 
     /* Premium VST-style rectangular underlay box - dark translucent, plugin luxury feel */
@@ -351,12 +351,7 @@
 
     /* Mobile-only fixes (max-width: 768px). Desktop layout completely unchanged. */
     @media (max-width: 768px) {
-      /* Make the main rectangle (.chassis) spread full-width across the screen on mobile only.
-         This is the primary fix so the DAILY GUIDANCE pill with date sits clearly inside
-         the visual rectangle instead of looking like it's outside or clipped.
-         - Small consistent gutter on far left/right of screen via body padding.
-         - Rounded corners preserved (not touched here).
-         - Breathing room comes from the chassis's existing internal padding. */
+      /* Mobile layout adjustments (chassis box removed, so these ensure full-width content with gutter) */
       body {
         padding-left: 12px;
         padding-right: 12px;
@@ -401,8 +396,7 @@
         display: none !important;
       }
 
-      /* DAILY GUIDANCE pill: chassis width is now the main solution for containment.
-         Kept these to ensure the pill never squeezes its text. */
+      /* DAILY GUIDANCE pill styles (kept for mobile to ensure the pill never squeezes its text) */
       .daily-guidance-pill {
         min-width: fit-content;
         overflow: visible;
