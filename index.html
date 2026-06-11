@@ -582,6 +582,11 @@
       return localStorage.getItem('lastOracleDrawDate') !== getTodayString();
     }
 
+    // Note: localStorage is per browser origin (domain).
+    // This is why it works when opening the .html file directly
+    // but you must hard-refresh (Ctrl/Cmd + Shift + R) after deploying
+    // to GitHub/Netlify so the browser loads the latest code.
+
     // The 33 Oracle Cards
     const deck = [
       {
