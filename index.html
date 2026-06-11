@@ -518,6 +518,7 @@
     }
 
     // Access popup logic (name + email collection for daily tracking)
+    // Formspree (works on Cloudflare Pages) - update the endpoint below
     function initAccessPopup() {
       const modal = document.getElementById('access-modal');
       const form = document.getElementById('access-form');
@@ -547,18 +548,21 @@
           return;
         }
 
-        // Prepare data for Netlify Forms
+        // Formspree endpoint (your real one)
+        const formspreeEndpoint = 'https://formspree.io/f/mvznbdve';
+
         const formData = new FormData();
-        formData.append('form-name', 'daily-oracle-access');
         formData.append('name', name);
         formData.append('email', email);
         formData.append('date', today);
 
         try {
-          const response = await fetch('/', {
+          const response = await fetch(formspreeEndpoint, {
             method: 'POST',
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams(formData).toString()
+            headers: { 
+              'Accept': 'application/json' 
+            },
+            body: formData
           });
 
           if (response.ok) {
@@ -573,7 +577,7 @@
           // Fallback: still allow access but warn (data may not have been recorded)
           localStorage.setItem('lastAccessDate', today);
           modal.style.display = 'none';
-          alert("Thank you! We recorded your access (form submission may need a moment to process).");
+          alert("Thank you! We recorded your access locally. Please set up Formspree for full tracking.");
         }
       });
     }
