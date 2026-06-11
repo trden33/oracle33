@@ -471,7 +471,7 @@
 
         <p class="text-[#8a7a65] text-[13px] sm:text-[14px] mb-6 sm:mb-8">Draw from the deck.<br>Receive your guidance.</p>
 
-        <button onclick="drawCard()" class="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#2c2520] text-white text-xs tracking-[2px] rounded-full">
+        <button id="main-draw-btn" onclick="drawCard()" class="inline-flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#2c2520] text-white text-xs tracking-[2px] rounded-full">
           DRAW A CARD <span>→</span>
         </button>
       </div>
@@ -568,6 +568,18 @@
       document.querySelectorAll('.today-date').forEach(el => {
         el.textContent = dateStr;
       });
+    }
+
+    // One card per day system (applies to both mobile and desktop)
+    function getTodayString() {
+      const d = new Date();
+      return d.getFullYear() + '-' + 
+             String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+             String(d.getDate()).padStart(2, '0');
+    }
+
+    function canDrawToday() {
+      return localStorage.getItem('lastOracleDrawDate') !== getTodayString();
     }
 
     // The 33 Oracle Cards
@@ -1122,12 +1134,22 @@
 
     // Main draw function
     function drawCard(forceNew = false) {
+      if (!canDrawToday()) {
+        return;
+      }
+
       const cardEl = document.getElementById('oracle-card');
       const interpretation = document.getElementById('interpretation');
       const glow = document.getElementById('card-glow');
 
       // Pick card — first draw of the session is date-seeded
       const isFirstDraw = !hasDrawn && !forceNew;
+
+      // Save immediately on the first daily draw so rapid clicks can't bypass the limit
+      if (isFirstDraw) {
+        localStorage.setItem('lastOracleDrawDate', getTodayString());
+      }
+
       currentCard = getCard(isFirstDraw);
 
       // Show glow behind the right card
@@ -1163,6 +1185,24 @@
             cardEl.classList.add('card-revealed');
             hasDrawn = true;
             if (navigator.vibrate) navigator.vibrate(8);
+
+            // Hide main draw button and DRAW ANOTHER options (limit already saved before animation)
+            if (isFirstDraw) {
+              const mainDrawBtn = document.getElementById('main-draw-btn');
+              if (mainDrawBtn) mainDrawBtn.style.display = 'none';
+
+              document.querySelectorAll('#interpretation button').forEach(btn => {
+                if (btn.textContent.toUpperCase().includes('DRAW ANOTHER')) {
+                  btn.style.display = 'none';
+                }
+              });
+
+              // Add locked message after drawing
+              const reminder = document.createElement('div');
+              reminder.className = 'mt-4 text-[9px] tracking-[2px] text-[#C4A35A] text-center';
+              reminder.innerHTML = '✦ You\'ve drawn today\'s card.<br>Come back tomorrow for a new one. ✦';
+              interpretation.appendChild(reminder);
+            }
           }, 320);
         }, 35);
       } else {
@@ -1252,6 +1292,10 @@
 
     // Handle clicking the revealed (right) card to redraw
     function handleDrawnCardClick() {
+      if (!canDrawToday()) {
+        return;
+      }
+
       const cardEl = document.getElementById('oracle-card');
 
       if (!hasDrawn) {
@@ -1303,6 +1347,9 @@
           if (document.activeElement.tagName === 'BUTTON') return;
           
           e.preventDefault();
+          if (!canDrawToday()) {
+            return;
+          }
           if (!hasDrawn) {
             drawCard();
           } else {
@@ -1311,6 +1358,9 @@
         }
         
         if (e.key.toLowerCase() === 'r' && hasDrawn) {
+          if (!canDrawToday()) {
+            return;
+          }
           drawCard(true);
         }
       });
@@ -1358,6 +1408,47 @@
       setTodayDate();
       initKeyboard();
       initEntrance();
+
+      // One card per day enforcement (both mobile and desktop)
+      const todayStr = getTodayString();
+      const lastDraw = localStorage.getItem('lastOracleDrawDate');
+      if (lastDraw === todayStr) {
+        // User has already drawn today — show the daily card in locked state
+        const dailyCard = getCard(true);
+        currentCard = dailyCard;
+        hasDrawn = true;
+
+        // Populate and reveal the card immediately
+        const cardContent = document.getElementById('card-content');
+        populateCardFront(currentCard);
+        const oracleCardEl = document.getElementById('oracle-card');
+        oracleCardEl.classList.add('card-revealed');
+
+        const interpretation = document.getElementById('interpretation');
+        interpretation.classList.remove('hidden');
+        interpretation.style.opacity = '1';
+
+        document.getElementById('daily-message').innerHTML = currentCard.daily;
+        document.getElementById('essence').innerHTML = 
+          `<span class="font-medium text-[#C4A35A]">${currentCard.keyword}.</span> ${currentCard.essence}`;
+
+        // Disable further drawing UI
+        const mainDrawBtn = document.getElementById('main-draw-btn');
+        if (mainDrawBtn) mainDrawBtn.style.display = 'none';
+
+        // Hide DRAW ANOTHER buttons
+        document.querySelectorAll('#interpretation button').forEach(btn => {
+          if (btn.textContent.toUpperCase().includes('DRAW ANOTHER')) {
+            btn.style.display = 'none';
+          }
+        });
+
+        // Add a friendly locked message
+        const reminder = document.createElement('div');
+        reminder.className = 'mt-4 text-[9px] tracking-[2px] text-[#C4A35A] text-center';
+        reminder.innerHTML = '✦ You\'ve already drawn today\'s card.<br>Come back tomorrow for a new one. ✦';
+        interpretation.appendChild(reminder);
+      }
 
       // Optional: pre-load a tiny hint that the right card is interactive
       setTimeout(() => {
