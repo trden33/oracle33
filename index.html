@@ -292,11 +292,6 @@
         align-items: flex-start;
       }
 
-      /* Remove the dot between "ORACLE" and "33" in the logo on mobile only */
-      .logo-dot {
-        display: none;
-      }
-
       /* Center the intro text ("One card. One message.") and button on mobile */
       .intro-column {
         text-align: center;
@@ -307,12 +302,6 @@
       .intro-column button {
         margin-left: auto;
         margin-right: auto;
-      }
-
-      /* Bug 3: Hide the decorative rule lines flanking "THE DECK" in the header.
-         Only the text remains visible. */
-      .deck-rule {
-        display: none !important;
       }
 
       /* DAILY GUIDANCE pill styles (kept for mobile to ensure the pill never squeezes its text) */
@@ -373,30 +362,25 @@
 
   <!-- Chassis wrapper -->
   <div class="chassis w-full max-w-[1200px] mx-auto p-4 sm:p-6 md:p-8">
+    <!-- Centered "A 33-CARD ORACLE" label at the top on desktop (higher position) -->
+    <div class="hidden md:flex items-center justify-center gap-4 mb-2">
+      <div class="h-px w-12 bg-[#C4A35A]/40"></div>
+      <span class="text-[10px] tracking-[3.5px] text-[#C4A35A]">A 33-CARD ORACLE</span>
+      <div class="h-px w-12 bg-[#C4A35A]/40"></div>
+    </div>
+
     <!-- Header -->
     <div class="app-header flex items-center justify-between mb-6 sm:mb-8 md:mb-12">
-      <!-- Logo left + daily guidance panel right below it (mobile only for now) -->
+      <!-- Daily guidance panel (mobile only) -->
       <div class="logo-section">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-full border border-[#C4A35A] flex items-center justify-center">
-            <i class="fa-solid fa-infinity text-[#C4A35A]"></i>
-          </div>
-          <span class="text-2xl font-semibold tracking-tighter">ORACLE<span class="text-[#C4A35A] logo-dot">.</span>33</span>
-        </div>
-
-        <!-- Daily guidance panel with the date - placed right below the Oracle 33 logo on mobile -->
+        <!-- Daily guidance panel with the date - placed on mobile -->
         <div class="daily-guidance-below-logo daily-guidance-pill mt-1 px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2 md:hidden">
           <span class="w-2 h-2 bg-[#C4A35A] rounded-full"></span>
           DAILY GUIDANCE <span class="today-date text-[#8a7a65]"></span>
         </div>
       </div>
 
-      <!-- THE DECK center (hidden on mobile) -->
-      <div class="flex items-center gap-2 sm:gap-4 hidden md:flex">
-        <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40 deck-rule"></div>
-        <span class="text-[10px] sm:text-xs tracking-[3px] sm:tracking-[4px] text-[#C4A35A]">THE DECK</span>
-        <div class="h-px w-8 sm:w-12 bg-[#C4A35A]/40 deck-rule"></div>
-      </div>
+
 
       <!-- Pill right (visible on desktop only) -->
       <div class="px-4 py-1 bg-white border border-[#C4A35A]/20 rounded-full text-xs tracking-wider text-[#C4A35A] flex items-center gap-2 daily-guidance-pill hidden md:flex">
@@ -409,7 +393,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 md:gap-12 items-start">
       <!-- Left column -->
       <div class="intro-column">
-        <div class="flex items-center gap-4 mb-4">
+        <div class="flex items-center gap-4 mb-4 md:hidden">
           <div class="h-px flex-1 bg-[#C4A35A]/40"></div>
           <span class="text-[10px] tracking-[3.5px] text-[#C4A35A]">A 33-CARD ORACLE</span>
           <div class="h-px flex-1 bg-[#C4A35A]/40"></div>
