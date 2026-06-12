@@ -330,24 +330,34 @@
 </head>
 <body class="bg-[#EDEDEA] min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 font-sans overflow-x-hidden">
   <!-- Access Popup - Collects name + email for daily tracking -->
-  <div id="access-modal" class="fixed inset-0 bg-black/70 backdrop-blur-md items-center justify-center z-[200]" style="display: none;">
-    <div class="bg-[#1a1633]/70 backdrop-blur-2xl border border-[#C4A35A]/30 rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-      <p class="text-[#C4A35A]/80 text-sm mb-6">The Simulation has something for you today.<br>Enter your name to decipher the message.</p>
+  <div id="access-modal" class="fixed inset-0 bg-black/35 backdrop-blur-2xl items-center justify-center z-[200]" style="display: none;">
+    <div class="relative bg-[#0a0818]/18 backdrop-blur-[48px] border border-white/15 rounded-[30px] p-8 max-w-md w-full mx-4 overflow-hidden
+                shadow-[0_30px_110px_-15px_rgb(0,0,0,0.6),0_12px_45px_-8px_rgb(0,0,0,0.35),inset_0_1px_0_rgba(255,255,255,0.22)]">
+      
+      <!-- Transparent liquid layers (very subtle for clear glass) -->
+      <div class="absolute -top-8 -right-6 w-52 h-52 bg-[#6b5bb8]/7 rounded-full blur-[85px] pointer-events-none"></div>
+      <div class="absolute -bottom-10 -left-8 w-40 h-40 bg-white/6 rounded-full blur-[75px] pointer-events-none"></div>
+      
+      <!-- Clear liquid glass refraction -->
+      <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent"></div>
+      <div class="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-white/12 to-transparent pointer-events-none"></div>
+
+      <p class="text-[#C4A35A]/90 text-sm mb-6">The Simulation has something for you today.<br>Enter your name to decipher the message.</p>
 
       <form id="access-form">
-        <div class="mb-4">
-          <label class="block text-[#C4A35A] text-xs tracking-[2px] mb-1">YOUR NAME</label>
+        <div class="mb-5">
+          <label class="block text-[#C4A35A] text-[10px] tracking-[2.5px] mb-1.5 font-medium">YOUR NAME</label>
           <input type="text" name="name" required 
-                 class="w-full bg-white/10 backdrop-blur-sm border border-white/20 focus:border-[#C4A35A]/60 text-white placeholder:text-white/50 px-4 py-2.5 rounded-lg outline-none transition-all focus:ring-1 focus:ring-[#C4A35A]/30">
+                 class="w-full bg-white/5 backdrop-blur-2xl border border-white/20 focus:border-white/45 text-white placeholder:text-white/30 px-5 py-3 rounded-2xl outline-none transition-all focus:ring-1 focus:ring-white/20 text-[15px]">
         </div>
 
         <button type="submit" 
-                class="w-full bg-[#C4A35A] hover:bg-[#d4af77] active:bg-[#b38b4f] text-[#1a1633] font-medium tracking-[2.5px] text-sm py-3 rounded-full transition-all">
+                class="w-full bg-[#C4A35A] hover:bg-[#d4af77] active:bg-[#b38b4f] text-[#1a1633] font-medium tracking-[2.5px] text-sm py-3.5 rounded-2xl transition-all shadow-lg hover:shadow-xl">
           CONTINUE TO THE ORACLE
         </button>
       </form>
 
-      <p class="text-[10px] text-[#C4A35A]/50 mt-4 text-center leading-tight">
+      <p class="text-[10px] text-[#C4A35A]/40 mt-5 text-center leading-tight tracking-wide">
         We respect your privacy.
       </p>
     </div>
